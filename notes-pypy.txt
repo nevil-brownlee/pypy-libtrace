@@ -1,4 +1,5 @@
 
+
 1102, Mon 9 Nov 15 (NZDT)
 
 Downloaded pypy OSX 64bit from pypy.org
@@ -390,5 +391,9 @@ tried cd ~/pypy-libtrace/lib/natkit, pypy test-IPflow.py
   had to change trace dir to ../../examples/traces
   then it ran as expected
 
+1228, Fri 15 Jan 2016 (NZDT)
 
+Chat with wannes, OK to use github for pypy-libtrace, note that
+  others can clone a copy and work on that!
+Also OK to copy Habib's testing system into pypy-libtrace.
 
