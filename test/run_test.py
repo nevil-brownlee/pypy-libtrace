@@ -31,7 +31,16 @@ def usage():
 
 #return python cmd according to the python interpreter version
 def get_python_cmd():
-    return ('python', 'python3')[sys.version_info[0]-2]
+#    return ('python', 'python3')[sys.version_info[0]-2]
+    if Options.wdir == 'pypy-test-cases':
+        return 'pypy'
+    elif Options.wdir == 'v2-test-cases':
+        return 'python'
+    elif Options.dir == 'v3-test-cases':
+        return 'python3
+    sys.stdout.write(options.file+" is not a test program\n")
+    return sys.exit()
+
 
 # checks command-line arguments
 def check_args(options):
@@ -240,7 +249,7 @@ parser.add_option("-r", action="store_true", dest='recursive_flag', default=Fals
                   help="traverses the test folder recursively and runs/generates all tests.")
 parser.add_option("-n", dest="n", type="int", default=1, help="number of runs (0: infinite, default: 1).")
 parser.add_option("-f", dest="file", help="test file name.")
-parser.add_option("-w", dest="wdir", default="/tmp", help="working directory (default: /tmp).")
+parser.add_option("-w", dest="wdir", default="/tmp", help="working directory (decdfault: /tmp).")
 
 # parse command-line arguments
 (Options, args) = parser.parse_args()
