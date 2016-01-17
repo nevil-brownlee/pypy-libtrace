@@ -32,13 +32,15 @@ def usage():
 #return python cmd according to the python interpreter version
 def get_python_cmd():
 #    return ('python', 'python3')[sys.version_info[0]-2]
-    if Options.wdir == 'pypy-test-cases':
+    dir = os.path.basename(Options.dir)
+    if dir == 'pypy-test-cases':
+        print "pypy selected"
         return 'pypy'
-    elif Options.wdir == 'v2-test-cases':
+    elif dir == 'v2-test-cases':
         return 'python'
-    elif Options.dir == 'v3-test-cases':
-        return 'python3
-    sys.stdout.write(options.file+" is not a test program\n")
+    elif dir == 'v3-test-cases':
+        return 'python3'
+    sys.stdout.write(Options.file+" is not a test program\n")
     return sys.exit()
 
 
