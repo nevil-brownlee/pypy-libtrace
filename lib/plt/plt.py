@@ -910,10 +910,10 @@ class _tcp_obj(_inet_obj):
             return lib.get_short(self.pi.dp, 16)
         return None
     def set_checksum(self, cks_v):
-        self.check_pkt()
+        self.check_tcp(18)
         if cks_v < 0 or cks_v > 0xFFFF:
-            raise ValueError("Checksum not 16-bit unsigned integer")
-        lib.set_short(self.pi.l3p, 16, cks_v)
+            raise PltError("Checksum not 16-bit unsigned integer")
+        lib.set_short(self.pi.dp, 16, cks_v)
         return None
     checksum = property(get_checksum, set_checksum)
 
@@ -978,10 +978,10 @@ class _udp_obj(_inet_obj):
             return lib.get_short(self.pi.dp, 6)
         return None
     def set_checksum(self, cks_v):
-        self.check_pkt()
+        self.check_udp(8)
         if cks_v < 0 or cks_v > 0xFFFF:
-            raise ValueError("Checksum not 16-bit unsigned integer")
-        lib.set_short(self.pi.l3p, 16, cks_v)
+            raise PltError("Checksum not 16-bit unsigned integer")
+        lib.set_short(self.pi.dp, 16, cks_v)
         return None
     checksum = property(get_checksum, set_checksum)
 
@@ -1036,12 +1036,13 @@ class _icmp_obj(_ip_obj):
         if self.check_icmp(4):
             return lib.get_short(self.pi.dp, 2)
         return None
-    def set_trans_cksm(self):
-        self.check_pkt()
-        if lib.transport_checksum(self.pi, 1) < 0:
-            raise PltError("Data too short to set icmp checksum")
+    def set_checksum(self, cks_v):
+        self.check_icmp(4)
+        if cks_v < 0 or cks_v > 0xFFFF:
+            raise PltError("Checksum not 16-bit unsigned integer")
+        lib.set_short(self.pi.dp, 2, cks_v)
         return None
-    checksum = property(get_checksum, set_trans_cksm)
+    checksum = property(get_checksum, set_checksum)
 
     def get_payload(self):
         if self.pi.rem < 8:  # ICMP 4-byte hdr + 4 bytes reserved
@@ -1124,12 +1125,13 @@ class _icmp6_obj(_ip_obj):
         if self.check_icmp6(4):
             return lib.get_short(self.pi.dp, 2)
         return None
-    def set_trans_cksm(self):
-        self.check_pkt()
-        if lib.transport_checksum(self.pi, 1) < 0:
-            raise PltError("Data too short to set icmp6 checksum")
+    def set_checksum(self, cks_v):
+        self.check_icmp6(4)
+        if cks_v < 0 or cks_v > 0xFFFF:
+            raise PltError("Checksum not 16-bit unsigned integer")
+        lib.set_short(self.pi.dp, 2, cks_v)
         return None
-    checksum = property(get_checksum, set_trans_cksm)
+    checksum = property(get_checksum, set_checksum)
 
     def get_payload(self):
         if self.pi.rem < 8:  # ICMP 4-byte hdr + 4 bytes reserved
