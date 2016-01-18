@@ -204,6 +204,7 @@ class _output_trace:
         if not self.started:
             raise PltError("Output trace not started")
         r = lib.trace_write_packet(self.lt_out, out_pkt.p)
+        print "write_packet returned %d" % r
         if r <= 0:  # libtrace error
             trace_err = lib.trace_get_err_output(self.lt_out)
             raise LibtraceError(ca2str(trace_err.problem))
@@ -426,7 +427,14 @@ class _pkt_obj(object): # New-style class, child of object
         elif self.pi.o_kind == KIND_CPY:
             return self.mom
         raise PltError(".data kind not PKT or CPY!")
-    data = property(get_data)
+    def set_data(self, new_data):
+        if self.pi.o_kind != KIND_PKT and self.pi.o_kind != KIND_CPY:
+            raise PltError(".data kind not PKT or CPY!")
+        if len(new_data) != self.pi.rem:
+            raise PltError("New data not same number of bytes as old data")
+        ffi.memmove(self.pi.dp[0:self.pi.rem], new_data, len(new_data))
+        return None
+    data = property(get_data, set_data)
 
     def get_time(self):
         self.check_pkt()
@@ -483,7 +491,11 @@ class _layer2_obj(_pkt_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
         # Data_dump(self.pi, self.mom, "init _layer2_obj")
- 
+
+    def __len__(self):
+        return self.pi.l2_rem
+    #len = property(get_len)
+        
 
 class _layer3_obj(_pkt_obj):
     def __init__(self, pi, mom):

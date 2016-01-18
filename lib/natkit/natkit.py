@@ -177,8 +177,6 @@ def make_fkey(obj):
         if not bool(plt_lib.get_transport_info(new_pi, obj.pi)):
             return None
         pi = new_pi
-    if pi.proto != 6 and pi.proto != 17:
-        return None  # Only handle TCP and UDP for now
     version = 4
     if pi.ethertype == 0x0800:
         fkey = ffi.new("struct fkey4 *")
@@ -191,8 +189,9 @@ def make_fkey(obj):
         ffi.memmove(fkey.saddr, pi.l3p[8:24], 16)
         ffi.memmove(fkey.daddr, pi.l3p[24:40], 16)
     fkey.proto = pi.proto
-    ffi.memmove(fkey.sport, pi.dp[0:2], 2)
-    ffi.memmove(fkey.dport, pi.dp[2:4], 2)
+    if pi.proto == 6 or pi.proto == 17:  # TCP|UDP port numbers
+        ffi.memmove(fkey.sport, pi.dp[0:2], 2)
+        ffi.memmove(fkey.dport, pi.dp[2:4], 2)
         #alen = 4
         #if fkey.version == 6:
         #    alen = 16

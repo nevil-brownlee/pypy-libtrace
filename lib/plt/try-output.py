@@ -8,15 +8,16 @@ print "- - - - -"
 
 print "NO_COMRESSION = %d" % plt.NO_COMPRESSION
 
-base = "/Users/jbro111"  # OSX
-#base = "/home/nevil"      # Ubuntu
+base = "/Users/jbro111/"  # OSX
+#base = "/home/nevil/"      # Ubuntu
 
-#fn = "pypy/small-sample.erf"
+#fn = "small-sample.erf"
 #fn = "tcp-analyse/fdt-p5.pcap"
-#fn = "pypy/small-sample.pcap"
-fn = "pypy/1000packets.pcap.gz"  # vlan id 1051 (Waikato)
+#fn = "small-sample.pcap"
+#fn = "1000packets.pcap.gz"  # vlan id 1051 (Waikato)
+fn = "anon-v4.pcap"
 
-full_fn = base + '/' + fn
+full_fn = base + 'pypy-libtrace/examples/' + fn
 
 print "%s: isfile %s" % (full_fn, os.path.isfile(full_fn))
 try:
@@ -36,7 +37,7 @@ flt = plt.filter('vlan 1051 and tcp')
 print "flt = %s" % flt
 
 t = plt.trace(uri)
-t.conf_filter(flt)
+#t.conf_filter(flt)
 t.conf_snaplen(48)
 t.start()
 print "+++ started"
@@ -47,7 +48,7 @@ print "+++ started again"
 
 
 #out_fn = base + '/' + "pypy/pylt/plt/test-out-zlib.pcap"
-out_fn = base + '/' + "pypy/pylt/plt/test-out-none.pcap"
+out_fn = base + "pypy-libtrace/lib/plt/test-out-none.pcap"
 out_uri =  trace_format + ':' + out_fn
 print ">> out_uri = %s" % out_uri
 
@@ -76,9 +77,13 @@ def print_last(s, rem):
         print "%02x" % s[x],
         x += 1
 
-for n,pkt in enumerate(t):
+n = 0
+for pkt in t:
+    n += 1
     ip = pkt.ip
     print "--- n=%d ---  cap_len=%d" % (n, pkt.capture_len)
+    if not ip:
+        continue
 
     sa = ip.src_prefix
     da = ip.dst_prefix
@@ -91,11 +96,10 @@ for n,pkt in enumerate(t):
 
     out_t.write_packet(pkt)
 
-
-    if n == 2:  # Zero-org
-        break
+    #if n == 2:  # Zero-org
+    #    break
         
-print "EOF - - -"
+print "EOF - - -  n = %d" % n
 
 out_t.close_output()
 
