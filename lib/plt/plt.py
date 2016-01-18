@@ -683,7 +683,7 @@ class _inet_obj(_pkt_obj):
     def set_trans_cksm(self):
         self.check_pkt()
         if lib.transport_checksum(self.pi, 1) < 0:
-            raise PltError("Data too short to set l3_cksm")
+            raise ValueError("Data too short to set l3_cksm")
         return None
 
 
@@ -909,12 +909,13 @@ class _tcp_obj(_inet_obj):
         if self.check_tcp(18):
             return lib.get_short(self.pi.dp, 16)
         return None
-    def set_trans_cksm(self):
+    def set_checksum(self, cks_v):
         self.check_pkt()
-        if lib.transport_checksum(self.pi, 1) < 0:
-            raise PltError("Data too short to set tcp checksum")
+        if cks_v < 0 or cks_v > 0xFFFF:
+            raise ValueError("Checksum not 16-bit unsigned integer")
+        lib.set_short(self.pi.l3p, 16, cks_v)
         return None
-    checksum = property(get_checksum, set_trans_cksm)
+    checksum = property(get_checksum, set_checksum)
 
     def get_urg_ptr(self):
         if self.check_tcp(20):
@@ -976,12 +977,13 @@ class _udp_obj(_inet_obj):
         if self.check_udp(8):
             return lib.get_short(self.pi.dp, 6)
         return None
-    def set_trans_cksm(self):
+    def set_checksum(self, cks_v):
         self.check_pkt()
-        if lib.transport_checksum(self.pi, 1) < 0:
-            raise PltError("Data too short to set tcp checksum")
+        if cks_v < 0 or cks_v > 0xFFFF:
+            raise ValueError("Checksum not 16-bit unsigned integer")
+        lib.set_short(self.pi.l3p, 16, cks_v)
         return None
-    checksum = property(get_checksum, set_trans_cksm)
+    checksum = property(get_checksum, set_checksum)
 
     def get_payload(self):
         if self.pi.rem >= 8:  # UDP has 8-byte header
