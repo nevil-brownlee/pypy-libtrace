@@ -388,6 +388,15 @@ class _pkt_obj(object): # New-style class, child of object
         return None
     tcp = property(get_tcp)
 
+    def get_tcp_payload(self):
+        self.check_pkt()
+        new_pi = ffi.new("struct pi *")
+        if lib.get_trans_payload(new_pi, self.pi):
+            if new_pi.proto == 6:
+                return _tcp_obj(new_pi, self.mom).payload
+        return None
+    tcp_payload = property(get_tcp_payload)
+
     def get_udp(self):
         self.check_pkt()
         new_pi = ffi.new("struct pi *")
@@ -396,6 +405,15 @@ class _pkt_obj(object): # New-style class, child of object
                 return _udp_obj(new_pi, self.mom)
         return None
     udp = property(get_udp)
+
+    def get_udp_payload(self):
+        self.check_pkt()
+        new_pi = ffi.new("struct pi *")
+        if lib.get_trans_payload(new_pi, self.pi):
+            if new_pi.proto == 17:
+                return _udp_obj(new_pi, self.mom).payload
+        return None
+    udp_payload = property(get_udp_payload)
 
     def get_icmp(self):
         self.check_pkt()
@@ -723,20 +741,20 @@ class _ip_obj(_inet_obj):
         return None
     checksum_ok = property(get_checksum_ok)
             
-    def get_hdr_checksum(self):
+    def get_checksum(self):
         if self.check_ip(12):
             return lib.get_short(self.pi.l3p, 10)
         return None
-    def set_hdr_checksum(self, cks_v):
+    def set_checksum(self, cks_v):
         if self.pi.o_kind != KIND_PKT:
             raise PltError("Object didn't come from a plt Packet")
-        if self.check_ip(12):
+        if not self.check_ip(12):
             raise PltError("Data too short to set IP checksum")
         if cks_v < 0 or cks_v > 0xFFFF:
             raise PltError("Checksum not 16-bit unsigned integer")
-        lib.set_short(self.pi.l3p[10], cks_v)
+        lib.set_short(self.pi.l3p, 10, cks_v)
         return None
-    hdr_checksum = property(get_hdr_checksum, set_hdr_checksum)
+    checksum = property(get_checksum, set_checksum)
             
     def get_payload(self):
         new_pi = ffi.new("struct pi *")
@@ -907,7 +925,7 @@ class _tcp_obj(_inet_obj):
     def get_payload(self):
         hdr_len = (self.pi.dp[12] >> 4)*4  # TCP header length
         if self.pi.rem > hdr_len:
-            l5_data = mk_data(self.pi, 0)
+            l5_data = mk_data(self.pi, hdr_len)
             pi = new_pi(TYPE_L5, KIND_CPY, self.pi.data,
                 self.pi.l3p, self.pi.l3_rem,  6,
                 self.pi.dp[hdr_len:self.pi.rem], self.pi.rem - hdr_len)

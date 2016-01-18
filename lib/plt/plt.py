@@ -741,20 +741,20 @@ class _ip_obj(_inet_obj):
         return None
     checksum_ok = property(get_checksum_ok)
             
-    def get_hdr_checksum(self):
+    def get_checksum(self):
         if self.check_ip(12):
             return lib.get_short(self.pi.l3p, 10)
         return None
-    def set_hdr_checksum(self, cks_v):
+    def set_checksum(self, cks_v):
         if self.pi.o_kind != KIND_PKT:
             raise PltError("Object didn't come from a plt Packet")
-        if self.check_ip(12):
+        if not self.check_ip(12):
             raise PltError("Data too short to set IP checksum")
         if cks_v < 0 or cks_v > 0xFFFF:
             raise PltError("Checksum not 16-bit unsigned integer")
-        lib.set_short(self.pi.l3p[10], cks_v)
+        lib.set_short(self.pi.l3p, 10, cks_v)
         return None
-    hdr_checksum = property(get_hdr_checksum, set_hdr_checksum)
+    checksum = property(get_checksum, set_checksum)
             
     def get_payload(self):
         new_pi = ffi.new("struct pi *")
