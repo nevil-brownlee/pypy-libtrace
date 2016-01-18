@@ -12,7 +12,7 @@ n = 0
 for pkt in t:
     n += 1  # Wireshark uses 1-org packet numbers
     ip = pkt.ip
-    if not ip:
+    if not ip or pkt.ip6:  # pypy pkt.ip allows ip or ip6!
         continue
 
     test_println("   %03d: checksum=%04x, OK=%s" % (n, ip.checksum, ip.test_l3_cksm()), get_tag())
@@ -33,7 +33,7 @@ for pkt in t:
                 tcp.checksum = 0x1234
             test_println("        tcp checksum=%04x, ok=%s" % (
                 tcp.checksum, tcp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except Exception as e:
             test_println("        .tcp. %s" % e, get_tag("n:"+str(n)))
 
     udp = ip.udp
@@ -49,7 +49,7 @@ for pkt in t:
                 udp.checksum = 0x5678
             test_println("        udp checksum=%04x, ok=%s" % (
                 udp.checksum, udp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except Exception as e:
             test_println("        .udp. %s" % e, get_tag("n:"+str(n)))
 
     #if n == 20:
