@@ -80,7 +80,9 @@ def new_pi(type, kind, data,  l3p, l3_rem,  proto, dp, rem):
     pi =  ffi.new("struct pi *")
     pi.o_type = type;  pi.o_kind = kind;  pi.data = data
         # Don't remember l2 info
-    pi.l3p = l3p;  pi.l3_rem = l3_rem;    pi.proto = proto
+    pi.l3p = l3p;
+    pi.l3_rem = l3_rem;
+    pi.proto = proto
     pi.dp = dp;   pi.rem = rem
     return pi
 
@@ -94,16 +96,28 @@ def mk_data(pi, hlen):  # Make a .mom for a pi
         raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
     return data
 
-def mk_new_pi(data_in):
+def mk_new_obj(type_in, data_in):  # Make pi and mom for a new object
     if isinstance(data_in, ffi.CData):
         mom = data_in;  in_len = ffi.sizeof(data_in)
     elif isinstance(data_in, bytearray):
         mom = ffi.new("uint8_t[]", tuple(data_in));  in_len = len(data_in)
     else:
-        raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
-    new_data = mom
-    pi = new_pi(TYPE_IP, KIND_CPY, mom,
-        mom, 0,  0, mom, in_len)    
+        if str(type(data_in))[-6:-2] == '_obj':
+            pi_in = data_in.pi
+            if pi_in.o_type < TYPE_L3 or pi_in.o_type >= TYPE_L4:
+                raise PltError("Expected a layer 3 plt object")
+            # Data_dump(data_in.pi, data_in.mom, "mk_new_obj(): data_in object")
+            if pi_in.l3_rem != 0:  # We have l3 data
+                pi_new = ffi.new("struct pi *")
+                if lib.get_trans_payload(pi_new, data_in.pi):
+                    # Data_dump(pi_new, data_in.mom, "pi_new")
+                    return pi_new, data_in.mom
+                raise PltError("Layer 3 plt object has no payload")
+            raise PltError("Expected a plt object with layer 3 data")
+        else:
+            raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
+    pi = new_pi(type_in, KIND_CPY, mom,  # type, kind, data
+        mom, in_len,  0,  mom, in_len)  # l3p, l3_rem,  proto,  dp, rem
     return pi, mom
     
 
@@ -779,11 +793,10 @@ class _ip_obj(_inet_obj):
     payload = property(get_payload)
 
     
-class ip(_ip_obj):
-    def __new__(cls, data_in):  # Objects have a .pi and a .mom
-        pi, mom = mk_new_pi(data_in)
-        Data_dump(pi, mom, "ip.__new__(obj)")
-        return _ip_obj(pi, mom)
+def ip(data_in):
+    pi, mom = mk_new_obj(TYPE_IP, data_in)
+    # Data_dump(pi, mom, "new ip()")
+    return _ip_obj(pi, mom)
         
 
 class _ip6_obj(_inet_obj):
@@ -822,14 +835,12 @@ class _ip6_obj(_inet_obj):
         return None
     payload = property(get_payload)
 
-class ip6(_ip6_obj):
-    def __new__(cls, obj):  # Objects have a .pi and a .mom
-        ip6_data = mk_data(obj.pi, 0)
-        pi = new_pi(TYPE_IP6, KIND_CPY, obj.pi.data,
-            obj.pi.l3p, obj.pi.l3_rem,  0, obj.pi.l3p, obj.pi.rem)
-        # Data_dump(pi, ip6_data, "ip6.__new__(obj)")
-        return _ip6_obj(pi, ip6_data)
-            
+
+def ip6(data_in):
+    pi, mom = mk_new_obj(TYPE_IP6, data_in)
+    # Data_dump(pi, mom, "new ip6()")
+    return _ip6_obj(pi, mom)
+        
 
 class _tcp_obj(_inet_obj):
     def __init__(self, pi, mom):
@@ -949,15 +960,14 @@ class _tcp_obj(_inet_obj):
         return None
     payload = property(get_payload)
 
-class tcp(_ip_obj):
-    def __new__(cls, obj):  # Objects have a .pi and a .mom
-        tcp_data = mk_data(obj.pi, 0)
-        pi = new_pi(TYPE_TCP, KIND_CPY, obj.pi.data, 0, 0,
-            6, obj.pi.l3p, obj.pi.rem)  # Don't remember l3 info
-        # Data_dump(pi, ip_data, "tcp.__new__(obj)")
-        return _tcp_obj(pi, tcp_data)
+
+def tcp(data_in):
+    pi, mom = mk_new_obj(TYPE_TCP, data_in)
+    pi.l3_rem = 0  # No l3 data for a new object
+    # Data_dump(pi, mom, "new tcp()")
+    return _tcp_obj(pi, mom)
         
-    
+
 class _udp_obj(_inet_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1010,19 +1020,19 @@ class _udp_obj(_inet_obj):
         return None
     payload = property(get_payload)
 
+
+def udp(data_in):
+    pi, mom = mk_new_obj(TYPE_UDP, data_in)
+    pi.l3_rem = 0  # No l3 data for a new object
+    # Data_dump(pi, mom, "new udp()")
+    return _udp_obj(pi, mom)
+        
+
 class _l5_obj(_inet_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
 
-class udp(_ip_obj):
-    def __new__(cls, obj):  # Objects have a .pi and a .mom
-        udp_data = mk_data(obj.pi, 0)
-        pi = new_pi(TYPE_UDP, KIND_CPY, obj.pi.data, 0, 0,
-            17, obj.pi.l3p, obj.pi.rem)  # Don't remember l3 info
-        # Data_dump(pi, ip_data, "udp.__new__(obj)")
-        return _udp_obj(pi, udp_data)
-        
-    
+
 class _icmp_obj(_ip_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1112,6 +1122,13 @@ class _redirect_obj(_icmp_obj):
     gateway = property(get_gateway)
 
     
+def icmp(data_in):
+    pi, mom = mk_new_obj(TYPE_ICMP, data_in)
+    pi.l3_rem = 0  # No l3 data for a new object
+    # Data_dump(pi, mom, "new icmp()")
+    return _icmp_obj(pi, mom)
+        
+
 class _icmp6_obj(_ip_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1232,3 +1249,10 @@ class _neighbour_obj(_icmp6_obj):
             return ipp.IPprefix(6, self.pi.dp[8:24])
         return None
     target_prefix = property(get_target_prefix)
+
+
+def icmp6(data_in):
+    pi, mom = mk_new_obj(TYPE_ICMP6, data_in)
+    pi.l3_rem = 0  # No l3 data for a new object
+    # Data_dump(pi, mom, "new icmp6()")
+    return _icmp6_obj(pi, mom)
