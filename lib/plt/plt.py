@@ -80,7 +80,7 @@ def new_pi(type, kind, data,  l3p, l3_rem,  proto, dp, rem):
     pi =  ffi.new("struct pi *")
     pi.o_type = type;  pi.o_kind = kind;  pi.data = data
         # Don't remember l2 info
-    pi.l3p = l3p;  pi.l3_rem = l3_rem; pi.proto = proto
+    pi.l3p = l3p;  pi.l3_rem = l3_rem;    pi.proto = proto
     pi.dp = dp;   pi.rem = rem
     return pi
 
@@ -93,6 +93,19 @@ def mk_data(pi, hlen):  # Make a .mom for a pi
     else:
         raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
     return data
+
+def mk_new_pi(data_in):
+    if isinstance(data_in, ffi.CData):
+        mom = data_in;  in_len = ffi.sizeof(data_in)
+    elif isinstance(data_in, bytearray):
+        mom = ffi.new("uint8_t[]", tuple(data_in));  in_len = len(data_in)
+    else:
+        raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
+    new_data = mom
+    pi = new_pi(TYPE_IP, KIND_CPY, mom,
+        mom, 0,  0, mom, in_len)    
+    return pi, mom
+    
 
 def sub_trans_obj(pi, hlen):
     l5_data = mk_data(pi, hlen)
@@ -204,7 +217,6 @@ class _output_trace:
         if not self.started:
             raise PltError("Output trace not started")
         r = lib.trace_write_packet(self.lt_out, out_pkt.p)
-        print "write_packet returned %d" % r
         if r <= 0:  # libtrace error
             trace_err = lib.trace_get_err_output(self.lt_out)
             raise LibtraceError(ca2str(trace_err.problem))
@@ -440,10 +452,8 @@ class _pkt_obj(object): # New-style class, child of object
     # Instance attributes ...
     
     def get_data(self):  # A plt object's data is *always* (pi.dp, pi.rem)
-        if self.pi.o_kind == KIND_PKT:
+        if self.pi.o_kind == KIND_PKT or self.pi.o_kind == KIND_CPY:
             return self.pi.dp[0:self.pi.rem]
-        elif self.pi.o_kind == KIND_CPY:
-            return self.mom
         raise PltError(".data kind not PKT or CPY!")
     def set_data(self, new_data):
         if self.pi.o_kind != KIND_PKT and self.pi.o_kind != KIND_CPY:
@@ -505,6 +515,11 @@ class _pkt_obj(object): # New-style class, child of object
     direction= property(get_direction)
 
 
+class _data_obj(object):
+    def __init__(self, pi, mom):
+        self.pi = pi;  self.mom = mom
+
+        
 class _layer2_obj(_pkt_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -763,13 +778,12 @@ class _ip_obj(_inet_obj):
         return None
     payload = property(get_payload)
 
+    
 class ip(_ip_obj):
-    def __new__(cls, obj):  # Objects have a .pi and a .mom
-        ip_data = mk_data(obj.pi, 0)
-        pi = new_pi(TYPE_IP, KIND_CPY, obj.pi.data,
-            obj.pi.l3p, obj.pi.l3_rem,  0, obj.pi.l3p, obj.pi.rem)
-        # Data_dump(pi, ip_data, "ip.__new__(obj)")
-        return _ip_obj(pi, ip_data)
+    def __new__(cls, data_in):  # Objects have a .pi and a .mom
+        pi, mom = mk_new_pi(data_in)
+        Data_dump(pi, mom, "ip.__new__(obj)")
+        return _ip_obj(pi, mom)
         
 
 class _ip6_obj(_inet_obj):
@@ -981,7 +995,7 @@ class _udp_obj(_inet_obj):
         self.check_udp(8)
         if cks_v < 0 or cks_v > 0xFFFF:
             raise PltError("Checksum not 16-bit unsigned integer")
-        lib.set_short(self.pi.dp, 16, cks_v)
+        lib.set_short(self.pi.dp, 6, cks_v)
         return None
     checksum = property(get_checksum, set_checksum)
 
