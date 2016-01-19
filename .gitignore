@@ -2,3 +2,8 @@
 *.pyc
 build
 dist
+*.c
+*.o
+*.so
+*egg-info*
+cipp*
