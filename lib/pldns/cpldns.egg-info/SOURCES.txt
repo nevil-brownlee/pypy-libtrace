@@ -1,6 +1,0 @@
-cpldns-setup.py
-cpldns.egg-info/PKG-INFO
-cpldns.egg-info/SOURCES.txt
-cpldns.egg-info/dependency_links.txt
-cpldns.egg-info/requires.txt
-cpldns.egg-info/top_level.txt

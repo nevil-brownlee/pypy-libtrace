@@ -1,6 +1,0 @@
-cipp-setup.py
-cipp.egg-info/PKG-INFO
-cipp.egg-info/SOURCES.txt
-cipp.egg-info/dependency_links.txt
-cipp.egg-info/requires.txt
-cipp.egg-info/top_level.txt

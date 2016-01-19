@@ -1,6 +1,0 @@
-cnatkit-setup.py
-cnatkit.egg-info/PKG-INFO
-cnatkit.egg-info/SOURCES.txt
-cnatkit.egg-info/dependency_links.txt
-cnatkit.egg-info/requires.txt
-cnatkit.egg-info/top_level.txt

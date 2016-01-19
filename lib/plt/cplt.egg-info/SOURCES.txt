@@ -1,6 +1,0 @@
-cplt-setup.py
-cplt.egg-info/PKG-INFO
-cplt.egg-info/SOURCES.txt
-cplt.egg-info/dependency_links.txt
-cplt.egg-info/requires.txt
-cplt.egg-info/top_level.txt
