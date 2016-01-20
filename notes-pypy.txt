@@ -397,3 +397,11 @@ Chat with wannes, OK to use github for pypy-libtrace, note that
   others can clone a copy and work on that!
 Also OK to copy Habib's testing system into pypy-libtrace.
 
+1650, Wed 20 Jan 2016 (NZDT)
+
+Reached the last test program, text-v6-tunnel.py
+That fails to get proto right;
+  For a packet (i.e. inside _pkt_obj), trace_get_transport() works fine
+  but for a data array (a bare Cdata array), we need to use
+    trace_get_payload_form_ip6() in get_transport_info(), sigh
+
