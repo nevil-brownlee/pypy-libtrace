@@ -1,4 +1,4 @@
-# 1156, Mon 13 Dec 2015 (NZDT)
+# 1249, Wed 20 Jan 2016 (NZDT)
 #
 # plt.py:  plt objects iplemented in python
 #
@@ -26,11 +26,11 @@ PLTversion    = "2.0"  # 23 Nov 15 (NZDT)
 
 KIND_PKT      =  1  # data points to a libtrace_packet_t
 KIND_STR      =  2  # data points to a C byte array
-KIND_CPY      =  3  # data points to another rlt_obj (MOM)
+KIND_CPY      =  3  # data points to another plt_obj (MOM)
 def bad_kind(v):
     return v < KIND_PKT or v > KIND_COPY
 
-kind_strings = {KIND_PKT:"Packet", KIND_STR:"String", KIND_CPY:"copy"}
+kind_strings = {KIND_PKT:"packet", KIND_STR:"String", KIND_CPY:"copy"}
 
 def plt_kind(k):
     v = kind_strings.get(k)
@@ -54,8 +54,8 @@ TYPE_L5       = 50
 
 type_strings = {TYPE_PKT:"Packet", TYPE_DATA:"Data", TYPE_L2:"Layer2",
     TYPE_L3:"Layer3", TYPE_Internet:"Internet", TYPE_IP:"IP", TYPE_IP6:"IP6",
-    TYPE_L4:"Layer4", TYPE_TCP:"TCP", TYPE_UDP:"UDP",
-    TYPE_L5:"Layer5", TYPE_ICMP:"ICMP", TYPE_ICMP6:"ICMP6"}
+    TYPE_L4:"Transport", TYPE_TCP:"TCP", TYPE_UDP:"UDP",
+    TYPE_L5:"Payload", TYPE_ICMP:"ICMP", TYPE_ICMP6:"ICMP6"}
 
 def plt_type(t):
     v = type_strings.get(t)
@@ -101,21 +101,20 @@ def mk_new_obj(type_in, data_in):  # Make pi and mom for a new object
         mom = data_in;  in_len = ffi.sizeof(data_in)
     elif isinstance(data_in, bytearray):
         mom = ffi.new("uint8_t[]", tuple(data_in));  in_len = len(data_in)
+    elif str(type(data_in))[-6:-2] == '_obj':
+        pi_in = data_in.pi
+        if pi_in.o_type < TYPE_L3 or pi_in.o_type >= TYPE_L4:
+            raise PltError("Expected a layer 3 plt object")
+        # Data_dump(data_in.pi, data_in.mom, "mk_new_obj(): data_in object")
+        if pi_in.l3_rem != 0:  # We have l3 data
+            pi_new = ffi.new("struct pi *")
+            if lib.get_trans_payload(pi_new, data_in.pi):
+                # Data_dump(pi_new, data_in.mom, "pi_new")
+                return pi_new, data_in.mom
+            raise PltError("Layer 3 plt object has no payload")
+        raise PltError("Expected a plt object with layer 3 data")
     else:
-        if str(type(data_in))[-6:-2] == '_obj':
-            pi_in = data_in.pi
-            if pi_in.o_type < TYPE_L3 or pi_in.o_type >= TYPE_L4:
-                raise PltError("Expected a layer 3 plt object")
-            # Data_dump(data_in.pi, data_in.mom, "mk_new_obj(): data_in object")
-            if pi_in.l3_rem != 0:  # We have l3 data
-                pi_new = ffi.new("struct pi *")
-                if lib.get_trans_payload(pi_new, data_in.pi):
-                    # Data_dump(pi_new, data_in.mom, "pi_new")
-                    return pi_new, data_in.mom
-                raise PltError("Layer 3 plt object has no payload")
-            raise PltError("Expected a plt object with layer 3 data")
-        else:
-            raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
+        raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
     pi = new_pi(type_in, KIND_CPY, mom,  # type, kind, data
         mom, in_len,  0,  mom, in_len)  # l3p, l3_rem,  proto,  dp, rem
     return pi, mom
@@ -168,6 +167,12 @@ TRACE_80211_RADIO = lib.TRACE_80211_RADIO
 TRACE_LLCSNAP = lib.TRACE_LLCSNAP
 TRACE_PPP = lib.TRACE_PPP
 TRACE_METADATA = lib.TRACE_METADATA
+
+TRACE_DIR_OUTGOING = lib.DIR_OUTGOING  # libtrace packet directions
+TRACE_DIR_INCOMING = lib.DIR_INCOMING
+TRACE_DIR_OTHER = lib.DIR_OTHER
+TRACE_DIR_UNKNOWN = lib.DIR_UNKNOWN
+
 
 def get_short(ca, x):  # Get 16-bit integer from cdata uint8_t[]
     return lib.get_short(ca, x)
@@ -318,7 +323,7 @@ class _trace:
         if r < 0:
             raise LibtraceError("get_pkt_info(): error %d" % -r)
         pkt.pi.o_type = TYPE_PKT;  pkt.pi.o_kind = KIND_PKT
-        # Data_dump(self.pkt.pi, None, "read_packet")
+        # Data_dump(pkt.pi, None, "read_packet")
         return True
         
     def __iter__(self):
@@ -523,17 +528,27 @@ class _pkt_obj(object): # New-style class, child of object
         return self.pi.linktype
     linktype = property(get_linktype)
 
-    def get_direction(self):
+    def get_kind(self):  # plt object kind
         self.check_pkt()
-        return lib.get_direction(self.pi)
-    direction= property(get_direction)
+        return plt_kind(self.pi.o_kind)
+    kind = property(get_kind)
+
+    def get_type(self):  # plt object type
+        self.check_pkt()
+        return plt_type(self.pi.o_type)
+    type = property(get_type)
+
+    def get_size(self):  # plt object rem bytes
+        self.check_pkt()
+        return self.pi.rem
+    size = property(get_size)
+
+    def get_direction(self):  # libtrace direction (for erf: traces)
+        self.check_pkt()
+        return lib.trace_get_direction(self.p)
+    direction = property(get_direction)
 
 
-class _data_obj(object):
-    def __init__(self, pi, mom):
-        self.pi = pi;  self.mom = mom
-
-        
 class _layer2_obj(_pkt_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -559,12 +574,6 @@ class _layer3_obj(_pkt_obj):
         if lib.transport_checksum(self.pi, 1) < 0:
             return None
         return True  #  Both checksums set
- 
-
-class _transport_obj(_pkt_obj):
-    def __init__(self, pi, mom):
-        self.pi = pi;  self.mom = mom
-        # Data_dump(self.pi, self.mom, "init _transport_obj")
  
 
 class _inet_obj(_pkt_obj):
@@ -841,6 +850,12 @@ def ip6(data_in):
     # Data_dump(pi, mom, "new ip6()")
     return _ip6_obj(pi, mom)
         
+
+class _transport_obj(_inet_obj):
+    def __init__(self, pi, mom):
+        self.pi = pi;  self.mom = mom
+        # Data_dump(self.pi, self.mom, "init _transport_obj")
+ 
 
 class _tcp_obj(_inet_obj):
     def __init__(self, pi, mom):
