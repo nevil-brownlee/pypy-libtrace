@@ -9,13 +9,14 @@ print "- - - - -"
 
 print "NO_COMRESSION = %d" % plt.NO_COMPRESSION
 
-base = "/Users/jbro111"  # OSX
-#base = "/home/nevil"      # Ubuntu
+base = "/Users/jbro111/pypy-libtrace/test/pypy-test-cases"  # OSX
+#base = "/home/nevil/pypy-libtrace/test"      # Ubuntu
 
-#fn = "pypy/small-sample.erf"
-#fn = "tcp-analyse/fdt-p5.pcap"
-#fn = "pypy/small-sample.pcap"
-fn = "pypy/1000packets.pcap.gz"
+#fn = "small-sample.erf"
+#fn = "fdt-p5.pcap"
+#fn = "small-sample.pcap"
+#fn = "1000packets.pcap.gz"
+fn = "anon-v4.pcap"
 
 full_fn = base + '/' + fn
 
@@ -52,18 +53,23 @@ def print_last(s, rem):
         print "%02x" % s[x],
         x += 1
 
-for n,pkt in enumerate(t):
+n = 0
+for pkt in t:
+    n += 1
     ip = pkt.ip
     print "--- n=%d ---" % n
 
     print "pkt    linktype %d, ethertype %04x, vlan_id %d" % (
         pkt.linktype, pkt.ethertype, pkt.vlan_id)
-    print "ip.seconds = %.6f, ip.ts_sec = %d, ip.time = %s" % (
-        ip.seconds, ip.ts_sec, ip.time)
-    print "ip.erf_time = %s" % ip.erf_time
-    print "ip.wire_len = %s, ip.capture_len = %s, direction = %s" % (
-        ip.wire_len, ip.capture_len, ip.direction)
+    print "pkt.seconds = %.6f, pkt.ts_sec = %d, pkt.time = %s" % (
+        pkt.seconds, pkt.ts_sec, pkt.time)
+    print "pkt.erf_time = %s" % pkt.erf_time
+    print "pkt.wire_len = %s, pkt.capture_len = %s, direction = %s" % (
+        pkt.wire_len, pkt.capture_len, pkt.direction)
 
+    if not ip:
+        continue
+    
     ba = ip.data
     print "@@ 1 @@ ba = %s" % ba
     print "IP.data:",
@@ -123,13 +129,13 @@ for n,pkt in enumerate(t):
     else:
         test_dict[s] = v+1
 
-    if n == 0:  # Zero-org
+    if n == 10:  # Zero-org
         break
         
 print "EOF - - -"
 
 
-#exit()
+exit()
 
 def ca2str(cdata_array):
     s = string.join(cdata_array, '')

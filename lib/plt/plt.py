@@ -24,6 +24,9 @@ import datetime, string
 
 PLTversion    = "2.0"  # 23 Nov 15 (NZDT)
 
+def version():
+    return PLTversion
+
 KIND_PKT      =  1  # data points to a libtrace_packet_t
 KIND_STR      =  2  # data points to a C byte array
 KIND_CPY      =  3  # data points to another plt_obj (MOM)
@@ -80,10 +83,8 @@ def new_pi(type, kind, data,  l3p, l3_rem,  proto, dp, rem):
     pi =  ffi.new("struct pi *")
     pi.o_type = type;  pi.o_kind = kind;  pi.data = data
         # Don't remember l2 info
-    pi.l3p = l3p;
-    pi.l3_rem = l3_rem;
-    pi.proto = proto
-    pi.dp = dp;   pi.rem = rem
+    pi.l3p = l3p;  pi.l3_rem = l3_rem;   pi.proto = proto
+    pi.dp = dp;  pi.rem = rem
     return pi
 
 def mk_data(pi, hlen):  # Make a .mom for a pi
@@ -105,7 +106,6 @@ def mk_new_obj(type_in, data_in):  # Make pi and mom for a new object
         pi_in = data_in.pi
         if pi_in.o_type < TYPE_L3 or pi_in.o_type >= TYPE_L4:
             raise PltError("Expected a layer 3 plt object")
-        # Data_dump(data_in.pi, data_in.mom, "mk_new_obj(): data_in object")
         if pi_in.l3_rem != 0:  # We have l3 data
             pi_new = ffi.new("struct pi *")
             if lib.get_trans_payload(pi_new, data_in.pi):
@@ -117,6 +117,11 @@ def mk_new_obj(type_in, data_in):  # Make pi and mom for a new object
         raise TypeError("Expected 'cdata uint8_t[]' or bytearray!")
     pi = new_pi(type_in, KIND_CPY, mom,  # type, kind, data
         mom, in_len,  0,  mom, in_len)  # l3p, l3_rem,  proto,  dp, rem
+    if type_in == TYPE_IP:
+        pi.proto = mom[9]
+    elif type_in == TYPE_IP6:
+        if not lib.get_ip6_proto(pi):
+            raise PltError("Couldn't get proto for IP6 object")
     return pi, mom
     
 
@@ -364,7 +369,11 @@ class _pkt_obj(object): # New-style class, child of object
     def check_pkt(self):
         if self.pi.o_kind != KIND_PKT:
             raise PltError("Object didn't come from a plt Packet")
-                
+
+    def check_obj_l3(self):
+        if self.pi.l3_rem == 0:
+            raise PltError("Expected a Layer 3 object")
+        
     def get_layer2(self):
         self.check_pkt()
         self.pi.o_type = TYPE_L2
@@ -411,7 +420,7 @@ class _pkt_obj(object): # New-style class, child of object
     ip6 = property(get_ip6)
 
     def get_tcp(self):
-        self.check_pkt()
+        self.check_obj_l3()
         new_pi = ffi.new("struct pi *")
         if lib.get_trans_payload(new_pi, self.pi):
             if new_pi.proto == 6:
@@ -420,7 +429,7 @@ class _pkt_obj(object): # New-style class, child of object
     tcp = property(get_tcp)
 
     def get_tcp_payload(self):
-        self.check_pkt()
+        self.check_obj_l3()
         new_pi = ffi.new("struct pi *")
         if lib.get_trans_payload(new_pi, self.pi):
             if new_pi.proto == 6:
@@ -429,7 +438,7 @@ class _pkt_obj(object): # New-style class, child of object
     tcp_payload = property(get_tcp_payload)
 
     def get_udp(self):
-        self.check_pkt()
+        self.check_obj_l3()
         new_pi = ffi.new("struct pi *")
         if lib.get_trans_payload(new_pi, self.pi):
             if new_pi.proto == 17:
@@ -438,7 +447,7 @@ class _pkt_obj(object): # New-style class, child of object
     udp = property(get_udp)
 
     def get_udp_payload(self):
-        self.check_pkt()
+        self.check_obj_l3()
         new_pi = ffi.new("struct pi *")
         if lib.get_trans_payload(new_pi, self.pi):
             if new_pi.proto == 17:
@@ -447,7 +456,7 @@ class _pkt_obj(object): # New-style class, child of object
     udp_payload = property(get_udp_payload)
 
     def get_icmp(self):
-        self.check_pkt()
+        self.check_obj_l3()
         if self.pi.ethertype == 0x0800:
             # Data_dump(self.pi, self.mom, "starting get_icmp")
             new_pi = ffi.new("struct pi *")
@@ -459,7 +468,7 @@ class _pkt_obj(object): # New-style class, child of object
     icmp = property(get_icmp)
 
     def get_icmp6(self):
-        self.check_pkt()
+        self.check_obj_l3()
         if self.pi.ethertype == 0x86DD:
             new_pi = ffi.new("struct pi *")
             if lib.get_trans_payload(new_pi, self.pi):
@@ -495,7 +504,7 @@ class _pkt_obj(object): # New-style class, child of object
 
     def get_ts_sec(self):
         self.check_pkt()
-        return lib.get_time(self.pi)
+        return int(lib.get_time(self.pi))
     ts_sec = property(get_ts_sec)
 
     def get_erf_time(self):
@@ -594,10 +603,11 @@ class _inet_obj(_pkt_obj):
 
     def get_proto(self):
         version = self.check_inet(10, 11)
-        if version != 0:
-            new_pi = ffi.new("struct pi *")
-            r = lib.get_transport_info(new_pi, self.pi)
-            return new_pi.proto
+        if version == 4:
+            return self.pi.l3p[9]
+        elif version == 6:
+            if lib.get_ip6_proto(self.pi):
+                return self.pi.proto
         return None
     proto = property(get_proto)
 
@@ -630,9 +640,9 @@ class _inet_obj(_pkt_obj):
     def set_hop_limit(self, new_val):
         version = self.check_inet(9, 8)
         if version == 4:
-            self.pi.l3p[9] = new_val
-        elif version == 6:
             self.pi.l3p[8] = new_val
+        elif version == 6:
+            self.pi.l3p[7] = new_val
         else:
             raise PltError("Data too short to set hop_limit")
         return None
@@ -688,14 +698,12 @@ class _inet_obj(_pkt_obj):
         return None
     dst_prefix = property(get_dst_prefix, set_dst_prefix)
 
-    def check_pkt(self):
-        if self.pi.o_kind != KIND_PKT:
-            raise PltError("Object didn't come from a plt Packet")
+    def check_l3(self):
         if self.pi.o_type < TYPE_L3:
             raise PltError("Expected a Layer 3 object")
                 
     def test_l3_cksm(self):
-        self.check_pkt()
+        self.check_l3()
         r = lib.l3_checksum(self.pi, 0)
         if r > 0:
             return True
@@ -704,13 +712,13 @@ class _inet_obj(_pkt_obj):
         return None
 
     def set_l3_cksm(self):
-        self.check_pkt()
+        self.check_l3()
         if lib.l3_checksum(self.pi, 1) < 0:
             raise PltError("Data too short to set l3_cksm")
         return None
     
     def test_trans_cksm(self):
-        self.check_pkt()
+        self.check_l3()
         r = lib.transport_checksum(self.pi, 0)
         if r > 0:
             return True
@@ -719,7 +727,7 @@ class _inet_obj(_pkt_obj):
         return None
 
     def set_trans_cksm(self):
-        self.check_pkt()
+        self.check_l3()
         if lib.transport_checksum(self.pi, 1) < 0:
             raise ValueError("Data too short to set l3_cksm")
         return None
@@ -770,7 +778,11 @@ class _ip_obj(_inet_obj):
         if self.check_ip(9):
             return self.pi.l3p[8]
         return None
-    ttl = property(get_ttl)
+    def set_ttl(self, new_ttl):
+        if self.check_ip(9):
+            self.pi.l3p[8] = new_ttl
+        return None
+    ttl = property(get_ttl, set_ttl)
             
     def get_checksum_ok(self):
         if self.check_ip(12):
@@ -804,6 +816,7 @@ class _ip_obj(_inet_obj):
     
 def ip(data_in):
     pi, mom = mk_new_obj(TYPE_IP, data_in)
+    pi.ethertype = 0x0800
     # Data_dump(pi, mom, "new ip()")
     return _ip_obj(pi, mom)
         
@@ -847,6 +860,7 @@ class _ip6_obj(_inet_obj):
 
 def ip6(data_in):
     pi, mom = mk_new_obj(TYPE_IP6, data_in)
+    pi.ethertype = 0x86DD
     # Data_dump(pi, mom, "new ip6()")
     return _ip6_obj(pi, mom)
         

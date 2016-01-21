@@ -1,5 +1,4 @@
 
-
 1102, Mon 9 Nov 15 (NZDT)
 
 Downloaded pypy OSX 64bit from pypy.org
@@ -404,4 +403,26 @@ That fails to get proto right;
   For a packet (i.e. inside _pkt_obj), trace_get_transport() works fine
   but for a data array (a bare Cdata array), we need to use
     trace_get_payload_form_ip6() in get_transport_info(), sigh
+
+1003, Thu 21 Jan 2016 (NZDT)
+
+Added get_ip6_proto() in build-cplt.py, use when we don't have a packet,
+  e.g. for an ip6(data).
+
+In build-cplt.py, three functions set pi.proto:
+  get_ip6_proto() - in _inet_obj.get_proto
+  get_transport_info() - in _pkt_obj.get_transport
+  get_trans_payload()  - pkt.get_ tcp/udp/icmp/icmp6 and their _payloads
+
+mk_new_obj() needs to set proto correctly, added code to do that.
+
+The only place where we need to get the transport protocol
+  other than in tcp/udp/etc is in _inet_obj.proto
+We used to do that by calling get_trans_payload(),
+  now we get it from the IP header (v4) or using get_ip6_proto()
+
+test-v6-tunnel.py creates an _ip6_obj, then tries to get ip6.udp.
+But .udp is in _pkt_obj, so it thinks the object should be kind == pkt.
+All it really needs is that its l3_rem should be > 0,
+  call check_obj)ip() to do that in get_tcp/udp/etc
 

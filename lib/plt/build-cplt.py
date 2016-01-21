@@ -27,6 +27,7 @@ ffi = FFI()
 ffi.cdef("int get_pkt_info(struct pi *spi, struct libtrace_packet_t *packet);")
 ffi.cdef("int get_transport_info(struct pi *new_spi, struct pi *spi);")
 ffi.cdef("int get_trans_payload(struct pi *new_spi, struct pi *spi);")
+ffi.cdef("int get_ip6_proto(struct pi *pi);")
 ffi.cdef("double get_time(struct pi *spi);")
 ffi.cdef("int get_ts_sec(struct pi *spi);")
 ffi.cdef("uint64_t get_erf_time(struct pi *spi);")
@@ -58,6 +59,11 @@ ffi.cdef("int TRACE_80211_RADIO;")
 ffi.cdef("int TRACE_LLCSNAP;")
 ffi.cdef("int TRACE_PPP;")
 ffi.cdef("int TRACE_METADATA;")
+
+ffi.cdef("int DIR_OUTGOING;")
+ffi.cdef("int DIR_INCOMING;")
+ffi.cdef("int DIR_OTHER;")
+ffi.cdef("int DIR_UNKNOWN;")
 
 ffi.cdef("int set_config(struct libtrace_t *trace, int which, int val);")
 ffi.cdef("int set_config_filter(struct libtrace_t *trace, struct libtrace_filter_t *filter);")
@@ -129,6 +135,16 @@ int get_transport_info(struct pi *new_spi, struct pi *spi) {
       new_spi->proto = proto;
       new_spi->dp = trans;  new_spi->rem = remaining;
       return 1;
+      }
+   return 0;
+   }
+
+int get_ip6_proto(struct pi *pi) {
+   uint32_t remaining = pi->l3_rem;  uint8_t proto;
+   libtrace_ip6_t *lip6 = (libtrace_ip6_t *)pi->l3p;
+   void *trans = trace_get_payload_from_ip6(lip6, &proto, &remaining);
+   if (trans) {
+      pi->proto = proto;  return 1;
       }
    return 0;
    }
@@ -309,6 +325,11 @@ int TRACE_LLCSNAP = TRACE_TYPE_LLCSNAP;
 int TRACE_PPP = TRACE_TYPE_PPP;
 int TRACE_METADATA = TRACE_TYPE_METADATA;
 
+int DIR_OUTGOING = TRACE_DIR_OUTGOING;
+int DIR_INCOMING = TRACE_DIR_INCOMING;
+int DIR_OTHER = TRACE_DIR_OTHER;
+int DIR_UNKNOWN = TRACE_DIR_UNKNOWN;
+
 int set_config(struct libtrace_t *trace, int which, int val) {
     return trace_config(trace, which, &val);
    }
@@ -373,6 +394,7 @@ extern int trace_apply_filter(struct libtrace_filter_t *filter,
    const struct libtrace_packet_t *packet);
 extern uint64_t trace_get_dropped_packets(struct libtrace_t *trace);
 extern uint64_t trace_get_accepted_packets(struct libtrace_t *trace);
+extern int trace_get_direction(const struct libtrace_packet_t *packet);
 
 struct pi {  /* DataObject info */
    int o_type;      /* Data type, RLT_TYPE values above */

@@ -44,7 +44,7 @@ for pkt in t:
     linktype = pkt.linktype
     ethertype = pkt.ethertype
     test_println("n=%d, linktype=%d, ethertype=%04x " % (n, linktype, ethertype), get_tag("n:"+str(n)))
-    if n == 5:
+    if n == 25:
         break
     ip = pkt.ip
     if not ip or pkt.ip6:
@@ -67,7 +67,7 @@ for pkt in t:
 #    print "io = {0}".format(io)
 
     ip.traffic_class = 55;
-    ip.hop_limit = (123);
+    ip.hop_limit = 123;
     test_println("%d == ver=%d, %s -> %s, proto=%d, tclass=%d, ttl=%d, hlen=%d, plen=%d" % (
         n, ip.version, ip.src_prefix, ip.dst_prefix,
         ip.proto, ip.traffic_class, ip.hop_limit, ip.hdr_len, ip.pkt_len), get_tag("n:"+str(n)))

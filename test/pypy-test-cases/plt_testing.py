@@ -131,7 +131,7 @@ def print_icmp(icmp, offset, tag=''):  # IPv4 only  (IPv6 uses ICMP6 protocol)
 
 def print_ip6_info(ip6, tag=''):
     print tag+get_tag()+" %s -> %s, TTL=%d" % (
-            ip6.src_prefix, ip6.dst_prefix, ip6.ttl)
+            ip6.src_prefix, ip6.dst_prefix, ip6.hop_limit)
 
 
 def print_icmp6(icmp6, offset, tag=''):  # IPv6 only

@@ -252,6 +252,7 @@ parser.add_option("-r", action="store_true", dest='recursive_flag', default=Fals
 parser.add_option("-n", dest="n", type="int", default=1, help="number of runs (0: infinite, default: 1).")
 parser.add_option("-f", dest="file", help="test file name.")
 parser.add_option("-w", dest="wdir", default="/tmp", help="working directory (decdfault: /tmp).")
+parser.add_option("-x", dest="x", type="int", default=1, help="number of failing tests allowed (0: infinite, default: 1).")
 
 # parse command-line arguments
 (Options, args) = parser.parse_args()
@@ -279,6 +280,8 @@ while i < Options.n or Options.n == 0:
             success = success + 1
         else:
             failed = failed + 1
+            if Options.x != 0 and failed == Options.x:
+                exit()
     else:
         # Walk the directory tree and run tests.
         for root, directories, files in os.walk(Options.dir):
@@ -288,6 +291,8 @@ while i < Options.n or Options.n == 0:
                         success = success + 1
                     else:
                         failed = failed + 1
+                        if Options.x != 0 and failed == Options.x:
+                            exit()
             # if -r is not specified, then do not go deeper.
             if (not Options.recursive_flag):
                 break

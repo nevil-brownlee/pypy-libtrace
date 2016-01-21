@@ -3,7 +3,7 @@
 [<module>:21]     1: 
 [<module>:22:{n:1}][print_icmp:99]            ICMP, type=0, code=0, checksum=e2a2,  wlen=64, clen=60, 2013-11-25 11:19:28.270645
 [<module>:22:{n:1}][print_icmp:109]            Echo reply,   ident=1d5c, sequence=1
-[<module>:22:{n:1}][print_icmp:130][print_data:32]              Echo 
+[<module>:22:{n:1}][print_icmp:130][print_data:32]              Echo  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00   00 00
  
 [<module>:21]     2: 
 [<module>:22:{n:2}][print_icmp:99]            ICMP, type=3, code=3, checksum=4b69,  wlen=524, clen=520, 2013-11-25 11:19:28.277832
