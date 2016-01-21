@@ -1,5 +1,4 @@
 *~
-*.pyc
 build
 dist
 *.c
@@ -7,3 +6,6 @@ dist
 *.so
 *egg-info*
 cipp*
+*.pyc
+*-1000.txt
+*.out
