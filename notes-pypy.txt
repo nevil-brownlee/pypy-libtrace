@@ -428,4 +428,18 @@ All it really needs is that its l3_rem should be > 0,
 
 1243, Fri 22 Jan 2016 (NZDT)
 
-Tried pypy-test-cases using python v2
+Tried pypy-test-cases using python v2, 9 failed!
+   1. test-checksum.py   OK, set_chcecksums returns None if it can't,
+      			   instead of raising an exception "Too short to set"
+   2. test-checksum6.py  OK, test_l3_cksm returns None for "Too short"
+   3. test-HomeFlow.py   OK, 4 lines added into source file
+   4. test-icmp.py       OK, pypy version hexprints Echo[0:16]
+   5. test-IPflow.py     OK, python rises "Not an IP packet"
+      			   Fix this, return None instead <<<<<
+   6. test-ipp.py        OK, width( = length-1) was a method in python-libtrace
+   7. test-layers.py     OK, pypy-lt gives actual object types
+   8. test-plt.py        OK, version changed from 1.8 to 2.0
+   9. test-read.py       OK, pypy-lt hexprints Echo data
+
+Fixed IPflow/not IP, removed class/__new__ from natkit and pldns
+
