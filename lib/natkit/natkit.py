@@ -177,17 +177,18 @@ def make_fkey(obj):
         if not bool(plt_lib.get_transport_info(new_pi, obj.pi)):
             return None
         pi = new_pi
-    version = 4
     if pi.ethertype == 0x0800:
         fkey = ffi.new("struct fkey4 *")
         fkey.version = 4
         ffi.memmove(fkey.saddr, pi.l3p[12:16], 4)
         ffi.memmove(fkey.daddr, pi.l3p[16:20], 4)
-    else:
+    elif pi.ethertype == 0x86DD:
         fkey = ffi.new("struct fkey6 *")
         fkey.version = 6;
         ffi.memmove(fkey.saddr, pi.l3p[8:24], 16)
         ffi.memmove(fkey.daddr, pi.l3p[24:40], 16)
+    else:  # Not IP or IP6
+        return None
     fkey.proto = pi.proto
     if pi.proto == 6 or pi.proto == 17:  # TCP|UDP port numbers
         ffi.memmove(fkey.sport, pi.dp[0:2], 2)
@@ -203,16 +204,14 @@ def make_fkey(obj):
     return fkey
 
     
-class IPflow(_IPflow_obj):
-    def __new__(cls, obj):  # Make IPflow from plt object
-        # plt.Data_dump(obj.pi, None, "starting IPflow.__new__")
-        fkey = make_fkey(obj)
-        if fkey:
-            return _IPflow_obj(FT_FIRST_PKT, fkey, None)
-        return None
+def IPflow(obj):  # Make IPflow from plt object
+    # plt.Data_dump(obj.pi, None, "starting IPflow()")
+    fkey = make_fkey(obj)
+    if fkey:
+        return _IPflow_obj(FT_FIRST_PKT, fkey, None)
+    return None
 
 
-class FlowHome(IPflow):
-    def __new__(cls, *prefixes):  # Make IPflow from plt object
-        return _IPflow_obj(FT_HOME_FLOW, None, prefixes)
+def FlowHome(*prefixes):  # Make IPflow from plt object
+    return _IPflow_obj(FT_HOME_FLOW, None, prefixes)
 

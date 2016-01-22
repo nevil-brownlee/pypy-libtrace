@@ -132,14 +132,13 @@ class _ldns_object(object):
     addit_rr_list= property(get_addit_rr_list)
 
 
-class ldns(_ldns_object):
-    def __new__(cls, obj):  # Objects have a .pi and a .mom
-        if obj.pi.o_kind != plt.KIND_CPY or obj.pi.o_type != plt.TYPE_L5:
-            raise plt.PltError("Expected a LEVEL_5 object")
-        ldns_info = ffi.new("struct ldns_info *")
-        dns_status = lib.get_ldns_info(ldns_info, obj.pi.dp, obj.pi.rem)
-        # plt.Data_dump(obj.pi, obj.mom, "new _ldns_object")
-        return _ldns_object(ldns_info)
+def ldns(obj):  # Objects have a .pi and a .mom
+    if obj.pi.o_kind != plt.KIND_CPY or obj.pi.o_type != plt.TYPE_L5:
+        raise plt.PltError("Expected a LEVEL_5 object")
+    ldns_info = ffi.new("struct ldns_info *")
+    dns_status = lib.get_ldns_info(ldns_info, obj.pi.dp, obj.pi.rem)
+    # plt.Data_dump(obj.pi, obj.mom, "new _ldns_object")
+    return _ldns_object(ldns_info)
         
                             
         

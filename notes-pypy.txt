@@ -426,3 +426,6 @@ But .udp is in _pkt_obj, so it thinks the object should be kind == pkt.
 All it really needs is that its l3_rem should be > 0,
   call check_obj)ip() to do that in get_tcp/udp/etc
 
+1243, Fri 22 Jan 2016 (NZDT)
+
+Tried pypy-test-cases using python v2
