@@ -5,15 +5,18 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>IPprefix</title>
 
 <meta name="generator" content="amaya 8.5, see http://www.w3.org/Amaya/" />
 <link rel="stylesheet" type="text/css" href="plt-doc.css" /></head><body>
 <h2>IPprefix Module</h2>
-<p>This Module (<big><span style="font-family: Courier New,Courier,monospace;">ipp</span></big>) provides methods to store and use IPv4 and IPv6
+<p>This Module (<big><span style="font-family: Courier New,Courier,monospace;">ipp</span></big>) provides methods to store and use IPv4 and Pv6
 addresses.</p>
-<p>When you use <span style="font-style: italic;">python-libtrace</span> (<span style="font-family: Courier New,Courier,monospace;">import plt</span>), &nbsp;IPprefix is
-automatically&nbsp;<br />loaded -&nbsp;you don't need to import <big><span style="font-family: Courier New,Courier,monospace;">ipp</span> </big>as well.</p>
+<p>To do anything with IPprefix objects using <span style="font-style: italic;">pypy-libtrace</span>, you must  <big><span style="font-family: Courier New,Courier,monospace;">import pp</span></big>.</p>
+<p>(This is a change from <span style="font-style: italic;">python-libtrace</span>, <span style="font-family: Courier New,Courier,monospace;" />which automatically imported <big><span style="font-family: Courier New,Courier,monospace;">ipp</span></big>).<br /><br />
+</p>
+
 <h3>Class IPprefix</h3>
 <p>Represents an IP adress or&nbsp;prefix.</p>
 <table class="indent1">
@@ -34,7 +37,7 @@ Variables</td>
 <strong>addr</strong>
 </td>
 <td class="name">
-4- or 16-byte array containing actual address; the array bytes contain the actual bytes of the
+4- or 16-byte pypy CFFI array containing actual address; the array bytes contain the actual bytes of the
 address
 </td>
 </tr>
@@ -43,7 +46,8 @@ address
 <span style="font-weight: bold;">length</span></td>
 <td class="name">
 Number of bits in prefix. If length is None the <span style="font-style: italic;">IPprefix</span> represents just
-an IP address
+an IP address, its length (by default) is 32 (IPv4) or 128 (IPv6)<br />
+
 </td>
 </tr>
 </tbody></table>
@@ -67,16 +71,17 @@ Parses str to find version and address, e.g.<br />
 &nbsp; &nbsp;p = ipp.from_s('fe80::20d:60ff:fe38:18b/64')
 </td>
 </tr><tr>
-<td class="name"><strong> </strong><br />
+<td class="name"><strong> </strong><span style="font-weight: bold;">str()</span><br />
 </td>
-<td class="name descriptionwidth"><em><em>IPprefix -&gt; aString</em></em></td>
+<td class="name descriptionwidth"><em><em>str(IPprefix) -&gt; aString</em></em></td>
 </tr>
 <tr>
 <td><br />
 </td>
 <td class="description">
 Returns a string containing a printable version of the
-<span style="font-style: italic;">IPprefix'</span>s address (and /width, if width is not None)<br /><span style="font-style: italic;">ipp will convert an IPprefix to a python string by calling its (built-in) str() function</span>
+<span style="font-style: italic;">IPprefix'</span>s address. <br />
+If the <span style="font-style: italic;">IPprefix</span>'s width is not&nbsp; 32 (IPv4) or 128 (IPv6), /width will be appended to the result string.<br />
 </td></tr>
 </tbody></table>
 <br />
@@ -119,7 +124,9 @@ Returns an IPprefix conatining an IP address, e.g. 192.168.0.3<br />
 IPv4, 6 for IPv6<br />
 &nbsp; &nbsp;address = 4- or 16-byte array containing<br />
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-&nbsp; &nbsp; &nbsp; &nbsp; actual address</td>
+&nbsp; &nbsp; &nbsp; &nbsp; actual address<br />
+&nbsp;&nbsp; length defaults to 32 (IPv4) or 128 (IPv6)<br />
+</td>
 </tr>
 <tr>
 <td class="name"><strong>IPprefix(v, a, len)</strong></td>
@@ -174,7 +181,7 @@ Se<span>t</span>s value for an IPprefix width.<br />
 <tr><td class="heading" colspan="2">Instance Methods for prefix testing</td>
 </tr>
 <tr>
-<td class="name methodwidth"><strong>is_prefix</strong></td>
+<td class="name methodwidth"><strong>is_prefix()</strong></td>
 <td class="name descriptionwidth"><em>IPprefix .is_prefix(OtherIPprefix)
 -&gt; True or False</em></td>
 </tr>
@@ -184,7 +191,7 @@ Se<span>t</span>s value for an IPprefix width.<br />
 <td class="description">Returns true if this <span style="font-style: italic;">IPprefix</span> is a prefix of <span style="font-style: italic;">OtherIPprefix</span>, i.e. their first <span style="font-style: italic;">IPprefix.length </span>bits are the same.<br /></td>
 </tr>
 <tr>
-<td class="name"><strong>equal</strong></td>
+<td class="name"><strong>equal()</strong></td>
 <td class="name"><em><em>IPprefix.equal(OtherIPprefix)
 -&gt; True or False </em></em></td>
 </tr>
@@ -206,7 +213,7 @@ anInteger</em></td>
 <td class="description">Returns<span style="font-style: italic;"> IPprefix.length - 1</span><br /></td>
 </tr>
 <tr>
-<td class="name"><strong>has_bit_set</strong></td>
+<td class="name"><strong>has_bit_set()</strong></td>
 <td class="name"><em>IPprefix.has_bit_set(Integer) -&gt; True or False</em></td>
 </tr>
 <tr>
@@ -219,7 +226,7 @@ anInteger</em></td>
 
 
 <tr>
-<td class="name"><strong>first_bit_different</strong></td>
+<td class="name"><strong>first_bit_different()</strong></td>
 <td class="name"><em>IPprefix.first_bit_different(OtherIPprefix) -&gt; anInteger</em></td>
 </tr>
 <tr>
@@ -285,4 +292,4 @@ Constants</td>
 </tbody>
 </table>
 
-<p>Nevil Brownlee<br />Fri, 13 Nov 15 (NZDT)</p></body></html>
+<p>Nevil Brownlee<br />Wed, 27 Jan 2016, (NZDT)</p></body></html>

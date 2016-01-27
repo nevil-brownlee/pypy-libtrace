@@ -7,6 +7,8 @@
 
 
 
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Handling Packets</title><meta name="generator" content="KompoZer" /><link rel="stylesheet" type="text/css" href="plt-doc.css" /></head><body>
 <h2>Handling Packets</h2>
 <h3>Class Packet</h3>
@@ -189,7 +191,7 @@ match <span style="font-style: italic;">aFilter.</span>
 <tr><td class="heading" colspan="2">Instance Variables</td></tr>
 <tr>
 <td class="name"><strong>data</strong></td>
-<td class="name"><em>pkt.data -&gt; aByteArray </em></td>
+<td class="name"><em>pkt.data -&gt; aCFFIArray </em></td>
 </tr>
 <tr>
 <td><br />
@@ -295,12 +297,12 @@ May be used for any pypy-libtrace object<br />
 <td class="heading" colspan="2">Class <span style="font-style: italic;">Set</span> &nbsp;Method</td>
 </tr>
 <tr><td class="name methodwidth"><span style="font-weight: bold;">data=</span></td>
-<td class="name descriptionwidth"><em>Packet.data = aByteArray</em></td>
+<td class="name descriptionwidth"><em>Packet.data = aCFFIArray</em></td>
 </tr>
 <tr>
 <td><br />
 </td><td class="vspace1">Overwrites the data bytes in a Data object
-with bytes from a pypy CFFI Cdata array.&nbsp; The array&nbsp; must be the same length as the
+with bytes from a pypy CFFI Cdata array.&nbsp; The array must be the same length as the
 original data from the packet</td></tr>
 </tbody>
 </table>

@@ -443,3 +443,22 @@ Tried pypy-test-cases using python v2, 9 failed!
 
 Fixed IPflow/not IP, removed class/__new__ from natkit and pldns
 
+Installing pypy:
+  Get right version from pypy.org
+    uname -m # x86_64 = 64-bit
+    Tried  pypy-4.0.1-linux_x86_64-portable.tar.bz2 on nevil-res4.its
+    Read 'Installing' on pypy.org download page:
+      install setup
+      sudo ln -s /home/jbro111/pypy/pypy-4.0.1-linux64/bin/pypy pypy
+  Install setuptools
+      wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | pypy
+    didn't work on nevil-res4.its:
+      ran wget on OSX, to get setuptools-19.2.zip nevil
+      scp that to nevil-res4
+      unzip setuptools-19.2.zip 
+      cd setuptools-19.2/
+      pypy setup.py install
+
+
+
+
