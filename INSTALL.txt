@@ -37,11 +37,11 @@ library.
 To run the tests, go to the 'test' subdirectory and run the sript
 'run_test' as follows:
 
-export TZ=Pacific/Auckland  # Get the times right for trace file packets
+export TZ=Pacific/Auckland  # Get times right for trace file packets
 <plt-folder>/test$ pypy run_test.py -d pypy-test-cases/ -t
 
-This command runs all test programs and reports the results. All tests
-should pass to make sure the library works properly.
+This command runs all 30 test programs and reports the results.
+All tests should pass to make sure the library works properly.
 
 Using pypy-libtrace
 ---------------------
