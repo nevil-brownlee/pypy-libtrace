@@ -25,7 +25,7 @@ VER=`./pylt-version.py`
 echo "Making tarball for $VER  ..."
 
 OLD=`echo ${PWD##*/}`  # Current directory name
-N="python-libtrace-${VER}"  # New directory name
+N="pypy-libtrace-${VER}"  # New directory name
 
 cd ..
 if [ $OLD != $N ]
