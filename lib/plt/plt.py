@@ -22,7 +22,7 @@ from cplt import ffi, lib
 import ipp
 import datetime, string
 
-PLTversion    = "2.0"  # 23 Nov 15 (NZDT)
+PLTversion    = "1.0"  # 23 Nov 15 (NZDT)
 
 def version():
     return PLTversion
