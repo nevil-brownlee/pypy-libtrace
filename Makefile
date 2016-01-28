@@ -2,7 +2,7 @@
 #
 # Main Makefile for the pypy-libtrace distribution.
 #
-# python-libtrace: a python module to make it easy to use libtrace
+# pypy-libtrace: a python module to make it easy to use libtrace
 # Copyright (C) 2016 by Nevil Brownlee, U Auckland | WAND
 #
 # This program is free software: you can redistribute it and/or modify

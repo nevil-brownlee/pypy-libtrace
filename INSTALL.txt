@@ -1,0 +1,69 @@
+pypy-libtrace INSTALL instructions
+------------------------------------
+
+Requirements:
+
+ * libtrace 3.0.21 or later
+ * ldns, which requires an up-to-date version of openssl
+ * pypy version 4.0.1 (including CFFI 1.3.0) or later
+ * python setuptools
+ 
+
+Installing python-libtrace
+--------------------------
+
+Check that you have the right version of libtrace, pypy, openssl
+and ldns (as listed above).  For openssl on Ubuntu, you may need
+to create a sumbolic link in /user/include, something like this:
+  openssl -> /home/nevil/openssl-1.0.1j/include/openssl
+
+tar zxf pypy-libtrace-x.y.tgz
+  # Unpacks everything into directory pypy-libtrace-x.y
+
+cd pypy-libtrace-x.y
+make install
+
+The above series of commands will build pypy-libtrace and
+install it into the place where pypy expects to find extension
+modules on your system.
+You'll probably need to use sudo for the make install step.
+
+The library comes with a set of test cases. You can run them to
+make sure the installation is complete. They are also useful, if
+you want to make changes to the library. In this case, they can
+be used to make sure your changes did not break anything in the
+library.
+
+To run the tests, go to the 'test' subdirectory and run the sript
+'run_test' as follows:
+
+export TZ=Pacific/Auckland  # Get the times right for trace file packets
+<plt-folder>/test$ pypy run_test.py -d pypy-test-cases/ -t
+
+This command runs all test programs and reports the results. All tests
+should pass to make sure the library works properly.
+
+Using pypy-libtrace
+---------------------
+
+The best source of information on how to use libtrace and the 
+tools that come with it is the libtrace wiki located at 
+http://www.wand.net.nz/trac/libtrace/wiki
+
+pypy-libtrace is documented in a set of html pages in the
+doc subdirctory of the distribution.
+A set of example programs is included in the doc/examples
+subdirectory.
+
+You should install these documentation files on a suitable
+webserver at your site (or you can see them at
+http://www.cs.auckland.ac.nz/~nevil/pypy-libtrace/ )
+
+
+Nevil Brownlee
+U Auckland, Fri, 29 Jan 16 (NZDT)
+
+Email for queries or comments: n.brownlee@auckland.ac.nz
+
+--------------------------------------------------------------
+
