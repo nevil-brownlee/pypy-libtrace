@@ -64,6 +64,10 @@ class IPprefix(object):  # New-style class, child of object
         else:
             return a
 
+    def __hash__(self):
+        return hash((self.i_ver, str(ffi.buffer(self.i_addr)),
+            self.i_len))  # tuples are hashable
+
     def cmp_addr(self, other):
         if self.i_ver != other.i_ver:
             raise ValueError("Ipprefix versions must be the same (4 or 6)")
@@ -76,9 +80,9 @@ class IPprefix(object):  # New-style class, child of object
         if sc == 0:
             if self.i_len != other.i_len:
                 if self.i_len > other.i_len:
-                    return -1
-                else:
                     return 1
+                else:
+                    return -1
         return sc
         
     def __lt__(self, other):
