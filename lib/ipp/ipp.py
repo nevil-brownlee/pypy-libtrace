@@ -19,7 +19,7 @@
 
 
 from cipp import ffi, lib
-import string
+import string, copy
 
 class IPprefix(object):  # New-style class, child of object
     def __init__(self, *args):  # (self, version, addr, length)
@@ -71,9 +71,7 @@ class IPprefix(object):  # New-style class, child of object
     def cmp_addr(self, other):
         if self.i_ver != other.i_ver:
             raise ValueError("Ipprefix versions must be the same (4 or 6)")
-        if self.i_ver == 4:
-            return lib.caddrcmp(4, self.i_addr, other.i_addr)
-        return lib.caddrcmp(16, self.i_addr, other.i_addr)
+        return lib.caddrcmp(self.i_ver, self.i_addr, other.i_addr)
         
     def cmp(self, other):  # Rich compare fundtions
         sc = self.cmp_addr(other)
@@ -99,7 +97,7 @@ class IPprefix(object):  # New-style class, child of object
         return self.cmp(other) > 0
 
     # Class functions
-    
+
     def first_bit_different(self, other):
         if not isinstance(other, IPprefix):
             raise TypeError("Expcted an IPprefix")
@@ -132,6 +130,15 @@ class IPprefix(object):  # New-style class, child of object
             raise ValueError("IPv6 bit number must be < 128")
         return bool(lib.c_bit_set(self.i_ver, self.addr, bit_nbr))
 
+    def network(self, net_len):
+        if self.i_ver == 4:
+            ca = ffi.new("uint8_t[4]");  sz = 4
+        else:
+            ca = ffi.new("uint8_t[16]");  sz = 16
+        ffi.memmove(ca, self.i_addr, sz)
+        lib.c_mask_network(ca, sz, self.i_addr, net_len)
+        return IPprefix(self.i_ver, ca, net_len)
+    
     # IPprefix instance properties
 
     def set_length(self, new_len):
@@ -164,7 +171,7 @@ class IPprefix(object):  # New-style class, child of object
         if self.version == 4:
             ca = ffi.new("uint8_t[4]")
         else:
-            ca = ffi.new("uint8_t[6]")
+            ca = ffi.new("uint8_t[16]")
         lib.c_complement(self.i_ver, ca, self.i_addr)
         return IPprefix(self.i_ver, ca, self.i_len)
     complement = property(get_complement)
