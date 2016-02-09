@@ -459,6 +459,21 @@ Installing pypy:
       cd setuptools-19.2/
       pypy setup.py install
 
+1743, Tue  9 Feb 2016 (NZDT)
 
+Added network(len) to ipp:
+  returns a new ipprefix with zero bits after first len
+Added code to test-ipp-hash.py to test it,
+  works fine if lib/ipp, works when ~/pypy-libtrace/lib/ipp/test-ipp-hash.py,
+  but says 'IPprefix' object has no attribute 'network'
+    when we copy it into ~/py-yaml and run it there !!!!!
 
+0949, Wed 10 Feb 2016 (NZDT)
+
+Eventually found that ~/py-yaml had an old copy of ipp.pyc (and maybe ipp.py)!
+Removing that solved the problem.
+To find python's import path:
+    import sys, os
+    pathname = os.path.dirname(sys.argv[0]
+    print 'full path =', os.path.abspath(pathname)
 
