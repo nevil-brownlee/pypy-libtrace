@@ -27,6 +27,7 @@ ffi = FFI()
 ffi.cdef("char *ipaddr2str(int version, uint8_t *addr);")
 ffi.cdef("int str2ipaddr(uint8_t *ba, int ver, char *s);")
 ffi.cdef("int caddrcmp(int version, uint8_t *a, uint8_t *b);")
+ffi.cdef("void c_mask_network(uint8_t *a, int sz, uint8_t *b, int len);")
 ffi.cdef("int c_bit_set(int version, uint8_t *a, int bn);")
 ffi.cdef("int c_fbd(int version, uint8_t *a, uint8_t *b);")
 ffi.cdef("void c_complement(int version, uint8_t *a, uint8_t *b);")
@@ -63,7 +64,17 @@ int str2ipaddr(uint8_t *ba, int ver, char *s) {
    }
 
 int caddrcmp(int version, uint8_t *a, uint8_t *b) {
-    return memcmp(a, b, version = 4 ? 4 : 16);  /* Returns -128, 0, 128 ! */
+    return memcmp(a, b, version == 4 ? 4 : 16);  /* Returns -128, 0, 128 ! */
+   }
+
+uint8_t fb_mask[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
+
+void c_mask_network(uint8_t *a, int sz, uint8_t *b, int len) {
+   int bytes = len/8, bits = len%8;
+   memmove(a, b, bytes);
+   a[bytes] = b[bytes] & fb_mask[bits];
+   int zlen = sz - bytes - 1;
+   if (zlen != 0) memset(&b[bytes+1], 0, zlen);
    }
 
 int c_fbd(int version, uint8_t *a, uint8_t *b) {
