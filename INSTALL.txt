@@ -9,8 +9,8 @@ Requirements:
  * python setuptools
  
 
-Installing python-libtrace
---------------------------
+Installing pypy-libtrace
+------------------------
 
 Check that you have the right version of libtrace, pypy, openssl
 and ldns (as listed above).  For openssl on Ubuntu, you may need
