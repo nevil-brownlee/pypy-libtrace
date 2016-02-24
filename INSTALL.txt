@@ -6,7 +6,8 @@ Requirements:
  * libtrace 3.0.21 or later
  * ldns, which requires an up-to-date version of openssl
  * pypy version 4.0.1 (including CFFI 1.3.0) or later
- * python setuptools
+ * python setuptools (e.g. using get-pip.py, see
+   https://pip.pypa.io/en/latest/installing/#installing-with-get-pip-py )
  
 
 Installing pypy-libtrace
