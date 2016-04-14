@@ -22,7 +22,7 @@ from cplt import ffi, lib
 import ipp
 import datetime, string
 
-PLTversion    = "1.0"  # 23 Nov 15 (NZDT)
+PLTversion    = "1.1"  # 23 Nov 15 (NZDT)
 
 def version():
     return PLTversion
@@ -959,6 +959,13 @@ class _tcp_obj(_inet_obj):
         return None
     window = property(get_window)
 
+    def get_checksum_ok(self):
+        if self.check_tcp(18):
+            return bool(lib.l3_checksum(self.pi, 0))
+            return r
+        return None
+    checksum_ok = property(get_checksum_ok)
+            
     def get_checksum(self):
         if self.check_tcp(18):
             return lib.get_short(self.pi.dp, 16)
@@ -1026,6 +1033,13 @@ class _udp_obj(_inet_obj):
         return None
     len = property(get_len)
 
+    def get_checksum_ok(self):
+        if self.check_udp(8):
+            return bool(lib.l3_checksum(self.pi, 0))
+            return r
+        return None
+    checksum_ok = property(get_checksum_ok)
+            
     def get_checksum(self):
         if self.check_udp(8):
             return lib.get_short(self.pi.dp, 6)
