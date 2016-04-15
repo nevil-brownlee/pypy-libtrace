@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html><head>
+
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type" /><title>Protocol Decodes: TCP</title><meta content="KompoZer" name="generator" /><link rel="stylesheet" type="text/css" href="plt-doc.css" /></head><body>
 <h2>Transport Layer Decodes</h2>
 <h3>Class TCP</h3>
@@ -140,6 +141,18 @@ anInteger</em></td>
 <td class="description">Receive Window size </td>
 </tr>
 <tr>
+<td class="name"><strong>checksum_ok</strong></td>
+<td class="name"><em>tcp.checksum -&gt; true, false or none<br />
+</em></td>
+</tr>
+<tr>
+<td><br />
+</td>
+<td class="description">None if the TCP payload is incomplete,<br />
+True if the TCP checksum is correct<br />
+ </td>
+</tr>
+<tr>
 <td class="name"><strong>checksum</strong></td>
 <td class="name"><em>tcp.checksum -&gt;
 anInteger</em></td>
@@ -166,7 +179,7 @@ anInteger</em></td>
 <tr>
 <td><br />
 </td>
-<td class="description">None if tcp had no payload, otherwise<br />
+<td class="description">None if TCP had no payload, otherwise<br />
 an object containing the packet's TCP payload<br />
 </td>
 </tr>
@@ -174,4 +187,4 @@ an object containing the packet's TCP payload<br />
 </tbody>
 </table>
 
-<span style="font-weight: bold;" /><p>Nevil Brownlee<br />&nbsp;Sat, 15 Mar 14 (PDT)</p></body></html>
+<span style="font-weight: bold;"><p>Nevil Brownlee<br />&nbsp;Fri, 15 Apr 16 (NZST)</p></span></body></html>
