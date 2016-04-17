@@ -2,13 +2,13 @@ $Header$
 
 python-libtrace
 
-Copyright (c) 2015, Nevil Brownlee, U Auckland | WAND
+Copyright (c) 2016, Nevil Brownlee, U Auckland | WAND
 
 This code is a set of Python bindings for libtrace, whose copyright notice 
 appears below.
 
 ---------------------------------------------------------------------------
-Copyright (c) 2007-2008 The University of Waikato, Hamilton, New Zealand.
+Copyright (c) 2007-2016 The University of Waikato, Hamilton, New Zealand.
 All rights reserved.
 
 This code has been developed by the University of Waikato WAND
@@ -32,4 +32,4 @@ is welcome.  Please email
    Nevil Brownlee:  n.brownlee@auckland.ac.nz
 
 
-Sat, 15 Mar 14 (PDT)
+Sat, 15 Mar 16 (NZDT)
