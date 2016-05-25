@@ -18,13 +18,14 @@ and ldns (as listed above).  For openssl on Ubuntu, you may need
 to create a sumbolic link in /user/include, something like this:
   openssl -> /home/nevil/openssl-1.0.1j/include/openssl
 
-tar zxf pypy-libtrace-x.y.tgz
-  # Unpacks everything into directory pypy-libtrace-x.y
+You should have obtained pypy-libtrace from github
+  git clone https://github.com/nevil-brownlee/pypy-libtrace.git
 
-cd pypy-libtrace-x.y
-make install
+Now
+  cd pypy-libtrace
+  make install
 
-The above series of commands will build pypy-libtrace and
+The above two of commands will build pypy-libtrace and
 install it into the place where pypy expects to find extension
 modules on your system.
 You'll probably need to use sudo for the make install step.
@@ -62,7 +63,7 @@ http://www.cs.auckland.ac.nz/~nevil/pypy-libtrace/ )
 
 
 Nevil Brownlee
-U Auckland, Fri, 29 Jan 16 (NZDT)
+U Auckland, Wed, 25 May 16 (NZST)
 
 Email for queries or comments: n.brownlee@auckland.ac.nz
 
