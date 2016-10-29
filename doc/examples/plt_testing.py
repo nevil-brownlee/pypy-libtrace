@@ -2,7 +2,7 @@
 # plt-testing.py:  Support routines for testing python-libtrace
 # Copyright (C) 2016, Nevil Brownlee, U Auckland | WAND
 
-import ipp, plt, datetime
+import ipp, plt
 
 import os      # Contains getcwd
 import sys     #   exit and stdout
