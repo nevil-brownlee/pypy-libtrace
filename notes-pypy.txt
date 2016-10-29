@@ -477,3 +477,17 @@ To find python's import path:
     pathname = os.path.dirname(sys.argv[0]
     print 'full path =', os.path.abspath(pathname)
 
+Sat, 29 Oct 2016 (NZDT)
+
+Notes on "how it works" ...
+pi = Packet Information struct
+  new_pi creates one in a new CFFI object
+mom = (pypy) object that pointers in a pi refer to
+
+To build new plt in lib/plt
+        pypy build-cplt.py
+        pypy cplt-setup.py install
+        pypy plt-setup.py install
+After cloning from github, sudo make before doing anything else!
+
+

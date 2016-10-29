@@ -1080,7 +1080,7 @@ class _icmp_obj(_ip_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
         self.pi.o_type = TYPE_ICMP
-        # Data_dump(self.pi, self.mom, "new _icmp_obj ***")
+        # Data_dump(self.pi, self.mom, "new _icmp_obj")
 
     def check_icmp(self, x):
         if self.pi.o_type != TYPE_ICMP:
@@ -1119,8 +1119,8 @@ class _icmp_obj(_ip_obj):
         if ityp == 3 or ityp == 4 or ityp == 5 or ityp == 11 or ityp == 12:
             pi.o_type = TYPE_IP
             return _ip_obj(pi, l5_data)
-        else:
-            return _l5_obj(pi, l5_data)
+        else:  # Return CFFIarray
+            return self.pi.dp[0:self.pi.rem]
     payload = property(get_payload)
 
     def get_echo(self):
@@ -1215,8 +1215,8 @@ class _icmp6_obj(_ip_obj):
         if ityp == 1 or ityp == 2 or ityp == 3 or ityp == 4:
             pi.o_type = TYPE_IP6
             return _ip_obj(pi, l5_data)
-        else:
-            return _l5_obj(pi, l5_data)
+        else:  # Return CFFIarray
+            return self.pi.dp[0:self.pi.rem]
     payload = property(get_payload)
 
     def get_echo(self):
