@@ -8,7 +8,7 @@ setup(
     description="Python libtrace, an OO interface to WAND's libtrace",
     author='Nevil Brownlee',
     author_email='n.brownlee@auckland.ac.nz',
-    url='https://www.cs.auckland.ac.nz/~nevil/python-libtrace/',
+    url='https://www.cs.auckland.ac.nz/~nevil/pypy-libtrace/',
 
     py_modules = ['plt']
     )
