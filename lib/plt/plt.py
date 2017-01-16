@@ -133,12 +133,12 @@ def sub_trans_obj(pi, hlen):
 
 def print_cdata(s, len):
     for x in range(0,len):
-        print "%02x" % s[x],
+        print("%02x" % s[x]),
         if x%32 == 31:
-            print
+            print()
         elif x%8 == 7:
-            print "",
-    print
+            print(),
+    print()
 
 
 class LibtraceError(Exception):  # Create new Exception
@@ -985,17 +985,91 @@ class _tcp_obj(_inet_obj):
     urg_ptr = property(get_urg_ptr)
 
     def get_payload(self):
-        hdr_len = (self.pi.dp[12] >> 4)*4  # TCP header length
-        if self.pi.rem > hdr_len:
-            l5_data = mk_data(self.pi, hdr_len)
-            pi = new_pi(TYPE_L5, KIND_CPY, self.pi.data,
-                self.pi.l3p, self.pi.l3_rem,  6,
-                self.pi.dp[hdr_len:self.pi.rem], self.pi.rem - hdr_len)
-            # Data_dump(pi, l5_data, "New TCP payload object")
-            return _l5_obj(pi, l5_data)
-        return None
+        if self.check_tcp(20):
+            hdr_len = (self.pi.dp[12] >> 4)*4  # TCP header length
+            if self.pi.rem > hdr_len:
+                l5_data = mk_data(self.pi, hdr_len)
+                pi = new_pi(TYPE_L5, KIND_CPY, self.pi.data,
+                    self.pi.l3p, self.pi.l3_rem,  6,
+                    self.pi.dp[hdr_len:self.pi.rem], self.pi.rem - hdr_len)
+                # Data_dump(pi, l5_data, "New TCP payload object")
+                return _l5_obj(pi, l5_data)
+            return None
+        else:
+            return None
     payload = property(get_payload)
 
+    def get_options_data(self):
+        if self.check_tcp(20):
+            hdr_len = (self.pi.dp[12] >> 4)*4  # TCP header length
+            if hdr_len <= 20 or self.pi.rem < hdr_len:
+                # No options or incomplete (unparsable) options
+                return None
+            return self.pi.dp[20:hdr_len]
+        return None
+    options_data = property(get_options_data)
+
+    def get_option_numbers(self):
+        if self.check_tcp(20):
+            hdr_len = (self.pi.dp[12] >> 4)*4  # TCP header length
+            if hdr_len <= 20 or self.pi.rem < hdr_len:
+                # No options or incomplete options
+                return None
+            o_bytes = self.pi.dp[20:hdr_len];  o_len = hdr_len-20
+            o_nbrs = ffi.new("uint8_t[]", o_len)
+            x = n_opts = 0
+            while x < o_len:
+                opt = o_bytes[x]
+                if opt == 0:  # End of option list
+                    break
+                elif opt == 1:  # No-op
+                    x += 1;  continue
+                t_len = o_bytes[x+1]
+                if x+t_len > o_len:  # Not enough bytes!
+                    break
+                o_nbrs[n_opts] = opt;  n_opts += 1;
+                if t_len != 0:
+                    x += t_len
+                else:
+                    break
+            numbers = ffi.new("uint8_t[]", n_opts)
+            ffi.memmove(numbers, o_nbrs, n_opts)
+            return numbers
+        return None
+    option_numbers = property(get_option_numbers)
+
+    def option(self, opt_nbr):
+        if opt_nbr < 2 or opt_nbr > 255:
+            raise PltError("TCP option number < 2 or > 255")            
+        if self.check_tcp(20):
+            hdr_len = (self.pi.dp[12] >> 4)*4  # TCP header length
+            if hdr_len <= 20 or self.pi.rem < hdr_len:
+                # No options or incomplete options
+                return None
+            o_bytes = self.pi.dp[20:hdr_len];  o_len = hdr_len-20
+            x = n_opts = 0
+            while x < o_len:
+                opt = o_bytes[x]
+                if opt == 0:  # End of option list
+                    break
+                elif opt == 1:  # No-op
+                    x += 1;  continue
+                t_len = o_bytes[x+1]
+                if x+t_len > o_len:  # Not enough bytes!
+                    break
+                if opt == opt_nbr:
+                    if t_len == 2:
+                        return True  # Option present
+                    else:
+                        val = self.pi.dp[20+x+2:20+x+t_len]
+                        res = ffi.new("uint8_t[]", t_len-2)
+                        ffi.memmove(res, val, t_len-2)
+                        return res
+                if t_len != 0:
+                    x += t_len
+                else:
+                    break
+        return None
 
 def tcp(data_in):
     pi, mom = mk_new_obj(TYPE_TCP, data_in)
@@ -1139,7 +1213,6 @@ class _icmp_obj(_ip_obj):
 class _echo_obj(_icmp_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
-        print
     
     def get_ident(self):
         if self.pi.rem >= 6:
