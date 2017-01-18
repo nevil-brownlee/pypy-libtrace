@@ -206,6 +206,8 @@ def make_fkey(obj):
     
 def IPflow(obj):  # Make IPflow from plt object
     # plt.Data_dump(obj.pi, None, "starting IPflow()")
+    if not isinstance(obj, plt._pkt_obj):
+        raise plt.PltError("IPflow: arg not plt_pkt object")
     fkey = make_fkey(obj)
     if fkey:
         return _IPflow_obj(FT_FIRST_PKT, fkey, None)
