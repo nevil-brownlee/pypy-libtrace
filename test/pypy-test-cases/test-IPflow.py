@@ -18,8 +18,9 @@ def test_uri(uri, tag=''):
         test_println("n = %d" % n, tag+get_tag("n:"+str(n)))
         ipf = natkit.IPflow(pkt)
         if not ipf:
-            test_println(" ", tag+get_tag())
+            test_println("probably not an IP packet", tag+get_tag("n:"+str(n)))
             continue
+
         nip += 1
 
         test_println("%5d: %d %3d  %5d %5d  %s  %s" % (n,  # v6
@@ -27,15 +28,15 @@ def test_uri(uri, tag=''):
            ipf.src_prefix, ipf.dst_prefix), tag+get_tag("n:"+str(n)))
 
         fwd = ipf.fwd_key
-        test_print("fwd =",  tag+get_tag("n:"+str(n)))
+        test_print("fwd =", tag+get_tag("n:"+str(n)))
         for b in fwd:
-            test_print(" %02x" % ord(b))
+            test_print(" %02x" % ord(b))  # python 2
 
         rev = ipf.rev_key
         test_println('')
-        test_print("rev =",tag+get_tag("n:"+str(n)))
+        test_print("rev =", tag+get_tag("n:"+str(n)))
         for b in rev:
-            test_print(" %02x" % ord(b))
+            test_print(" %02x" % ord(b))  # python 2
         test_println('')
 
         if nip == 4:
