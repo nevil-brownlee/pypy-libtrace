@@ -35,6 +35,8 @@ def get_python_cmd():
     dir = os.path.basename(Options.dir)
     if dir == 'pypy-test-cases':
         return 'pypy'
+    elif dir == 'pypy3-test-cases':
+        return 'pypy3'
     elif dir == 'v2-test-cases':
         return 'python'
     elif dir == 'v3-test-cases':
