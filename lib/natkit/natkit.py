@@ -20,9 +20,8 @@
 
 from cnatkit import ffi, lib
 from cplt import lib as plt_lib
-#from ipp import lib as ipp_lib
 import ipp, plt
-
+import sys ##
 
 def ba_get_short(bp, x):
     if isinstance(bp, ffi.CData):
@@ -77,6 +76,8 @@ class _IPflow_obj(object):
             self.home_flow = True
             self.prefixes = p2
         self.fkey = fkey
+        #if fkey:  # None to create a HomeFlow
+        #    print_fkey("_IPflow_obj, fkey =", self.fkey)
 
     def get_version(self):
         return self.fkey.version
@@ -103,21 +104,28 @@ class _IPflow_obj(object):
     dst_prefix = property(get_dst_prefix)
         
     def get_fwd_key(self):
-        return str(ffi.buffer(self.fkey))
+        #print_fkey("get_fwd_key(): fkey =", self.fkey)
+        if self.fkey.version == 4:
+            klen = 14;  ct = "char[14]"
+        else:
+            klen = 38;  ct = "char[38]"
+        return ffi.unpack(ffi.cast(ct, self.fkey), klen).decode('cp437')
     fwd_key = property(get_fwd_key)
         
     def get_rev_key(self):
         if self.fkey.version == 4:
-            rkey = ffi.new("struct fkey4 *");  alen = 4
+            rkey = ffi.new("struct fkey4 *")
+            alen = 4;  klen = 14;  ct = "char[14]"
         else:
-            rkey = ffi.new("struct fkey6 *");  alen = 16
+            rkey = ffi.new("struct fkey6 *")
+            alen = 16;  klen = 38;  ct = "char[38]"
         rkey.version = self.fkey.version
         rkey.proto = self.fkey.proto
         ffi.memmove(rkey.sport, self.fkey.dport, 2)
         ffi.memmove(rkey.dport, self.fkey.sport, 2)
         ffi.memmove(rkey.saddr, self.fkey.daddr, alen)
         ffi.memmove(rkey.daddr, self.fkey.saddr, alen)
-        return str(ffi.buffer(rkey))
+        return ffi.unpack(ffi.cast(ct, rkey), klen).decode('cp437')
     rev_key = property(get_rev_key)
 
     def addr_in_home(self, a):
@@ -131,7 +139,8 @@ class _IPflow_obj(object):
     def get_home_key(self):
         if self.home_flow:
             if self.addr_in_home(self.fkey.daddr):
-                return str(ffi.buffer(self.fkey))
+                #return str(ffi.buffer(self.fkey))
+                return self.get_fwd_key()
             else:
                 return self.get_rev_key()
         else:
@@ -165,10 +174,21 @@ class _IPflow_obj(object):
     def flow(self, pkt):
         if self.home_flow:
             fkey = make_fkey(pkt)
+            #print_fkey("HF-make_fkey() returned", fkey) ##
             return _IPflow_obj(FT_HOME_FLOW, fkey, self.prefixes)
         else:
            raise plt.PltError("Expected a HomeFlow")
 
+#def print_fkey(msg, fkey):
+#    alen = 4
+#    if fkey.version == 6:
+#        alen = 16
+#    klen = 6+2*alen
+#    bkey = ffi.new("uint8_t[]", klen)  # Don't use ([%d], klen) !
+#    ffi.memmove(bkey, fkey, klen)
+#    sys.stdout.write("%s " % msg)
+#    plt.print_cdata(bkey, klen)
+    
 def make_fkey(obj):
     if obj.pi.o_kind != plt.KIND_PKT:
         raise plt.PltError("Object didn't come from a plt Packet")
@@ -193,23 +213,15 @@ def make_fkey(obj):
     if pi.proto == 6 or pi.proto == 17:  # TCP|UDP port numbers
         ffi.memmove(fkey.sport, pi.dp[0:2], 2)
         ffi.memmove(fkey.dport, pi.dp[2:4], 2)
-        #alen = 4
-        #if fkey.version == 6:
-        #    alen = 16
-        #klen = 6+2*alen
-        #bkey = ffi.new("uint8_t[]", klen)  # Don't use ([%d], klen) !
-        #ffi.memmove(bkey, fkey, klen)
-        #print "!!! bkey = %s" % bkey
-        #plt.print_cdata(bkey, klen)
     return fkey
 
-    
 def IPflow(obj):  # Make IPflow from plt object
     # plt.Data_dump(obj.pi, None, "starting IPflow()")
     if not isinstance(obj, plt._pkt_obj):
         raise plt.PltError("IPflow: arg not plt_pkt object")
     fkey = make_fkey(obj)
     if fkey:
+        #print_fkey("IP-make_fkey() returned", fkey) ##
         return _IPflow_obj(FT_FIRST_PKT, fkey, None)
     return None
 

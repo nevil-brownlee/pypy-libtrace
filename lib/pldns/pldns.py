@@ -23,16 +23,16 @@ import plt
 import string
 
 def opcodestr(opcode):  # Module methods that return strings
-    return plt.ca2str(lib.ldns_pkt_opcode2str(opcode))
+    return ffi.string(lib.ldns_pkt_opcode2str(opcode)).decode('ascii')
 
 def rcodestr(rcode):
-    return plt.ca2str(lib.ldns_pkt_rcode2str(rcode))
+    return ffi.string(lib.ldns_pkt_rcode2str(rcode)).decode('ascii')
 
 def typestr(type):
-    return plt.ca2str(lib.ldns_rr_type2str(type))                    
+    return ffi.string(lib.ldns_rr_type2str(type)).decode('ascii')
 
 def errorstr(err_nbr):
-    return plt.ca2str(lib.ldns_get_errorstr_by_id(err_nbr))
+    return ffi.string(lib.ldns_get_errorstr_by_id(err_nbr)).decode('ascii')
 
 
 class _ldns_rr(object):
@@ -59,8 +59,8 @@ class _ldns_rr(object):
         len = lib.ldns_rr_rd_count(self.rr)
         for j in range(len):
             rdf = lib.ldns_rr_rdf(self.rr, j)
-            rdl.append(plt.ca2str(lib.ldns_rdf2str(rdf)))
-        return string.join(rdl, ' ')
+            rdl.append(str(plt.ca2str(lib.ldns_rdf2str(rdf))))
+        return ' '.join(rdl)
     rdata = property(get_rdata)
 
     def get_str(self):

@@ -20,7 +20,7 @@
 
 from cplt import ffi, lib
 import ipp
-import datetime, string
+import datetime, string, sys
 
 PLTversion    = "1.1"  # 23 Nov 15 (NZDT)
 
@@ -133,11 +133,11 @@ def sub_trans_obj(pi, hlen):
 
 def print_cdata(s, len):
     for x in range(0,len):
-        print("%02x" % s[x]),
+        sys.stdout.write(" %02x" % s[x])
         if x%32 == 31:
-            print()
+            sys.stdout.write("\n")
         elif x%8 == 7:
-            print(),
+            sys.stdout.write(" ")
     print()
 
 
@@ -199,7 +199,7 @@ def output_trace(uri):
 class _output_trace:
     def __init__(self, uri):
         self.uri = uri
-        self.lt_out = lib.trace_create_output(uri)  # Create trace
+        self.lt_out = lib.trace_create_output(uri.encode('utf-8'))  # Create trace
         self.started = False
 
     def __str__(self):
@@ -253,7 +253,7 @@ def filter(fstring):
 class _filter:
     def __init__(self, filterstring):
         self.fstring = filterstring
-        self.filter = lib.trace_create_filter(filterstring)
+        self.filter = lib.trace_create_filter(filterstring.encode('utf-8'))
         self.used = False
         
     def __str__(self):
@@ -268,7 +268,8 @@ def trace(uri):
 class _trace:
     def __init__(self, uri):
         self.uri = uri
-        self.ltrace = lib.trace_create(uri)  # Create trace
+        #self.ltrace = lib.trace_create(uri)  # Create trace  # py2
+        self.ltrace = lib.trace_create(uri.encode(encoding='UTF-8'))  # Create trace
         self.pkt = _pkt_obj()
         self.started = False
 

@@ -54,13 +54,15 @@ class IPprefix(object):  # New-style class, child of object
             self.i_len = pref_max
 
     def __str__(self):
-        a = ffi.string(lib.ipaddr2str(self.i_ver, self.i_addr))
+        #a = ffi.string(lib.ipaddr2str(self.i_ver, self.i_addr))
+        a = ffi.string(lib.ipaddr2str(self.i_ver, \
+            self.i_addr)).decode(encoding='utf-8')
         if self.i_ver == 4:
             pref_max = 32
         else:
             pref_max = 128
         if self.i_len < pref_max:
-            return a+'/'+str(self.i_len)
+            return (a+'/'+str(self.i_len))
         else:
             return a
 
@@ -205,7 +207,8 @@ def from_s(s):  # ipp Functions
             raise ValueError("IPv4 length must be <= 128")
         ver = 6;  ca = ffi.new("uint8_t[16]")
 
-    r = lib.str2ipaddr(ca, ver, sa[0])
+    #r = lib.str2ipaddr(ca, ver, sa[0])  # py2
+    r = lib.str2ipaddr(ca, ver, sa[0].encode(encoding='UTF-8'))
     if r:
         if length:
             return IPprefix(ver, ca, length)
