@@ -1,4 +1,4 @@
-[get_example_trace:23]fn = icmp-sample.pcap
+[get_example_trace:26]fn = icmp-sample.pcap
 
 [<module>:35] 21 packets examined
 

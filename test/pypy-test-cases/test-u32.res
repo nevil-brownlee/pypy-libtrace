@@ -1,5 +1,5 @@
-[<module>:13]  10  02  20  04  30  05  40  06   
-[<module>:17]  short[2] = 2004 short[4] = 3005 long[2]  = 20043005  long[5]  = None
+[<module>:13] 10 02 20 04 30 05 40 06  
+[<module>:17] short[2] = 2004 short[4] = 3005 long[2]  = 20043005  long[5]  = None
 
 [<module>:24] a=5, b=6,  a>b = False
 [<module>:25] a=5, b=6, a>=b = False

@@ -1,4 +1,4 @@
-[get_example_trace:23]fn = icmp-sample.pcap
+[get_example_trace:26]fn = icmp-sample.pcap
 
 [<module>:19:{n:1}]    001: checksum=79e4, OK=True
 [<module>:25:{n:1}]         icmp checksum=e2a2, ok=True
@@ -30,35 +30,35 @@
 [<module>:19:{n:10}]    010: checksum=7263, OK=True
 [<module>:25:{n:10}]         icmp checksum=e062, ok=True
 [<module>:31:{n:10}]         icmp checksum=5678, ok=False
-[get_example_trace:23]fn = icmp6-sample.pcap
+[get_example_trace:26]fn = icmp6-sample.pcap
 
-[<module>:49:{n:1}]    001: checksum_OK=True
-[<module>:54:{n:1}]         icmp6 checksum=c165, ok=True
-[<module>:60:{n:1}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:2}]    002: checksum_OK=True
-[<module>:54:{n:2}]         icmp6 checksum=5ecd, ok=True
-[<module>:60:{n:2}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:3}]    003: checksum_OK=True
-[<module>:54:{n:3}]         icmp6 checksum=5ecd, ok=True
-[<module>:60:{n:3}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:4}]    004: checksum_OK=True
-[<module>:54:{n:4}]         icmp6 checksum=6151, ok=True
-[<module>:60:{n:4}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:5}]    005: checksum_OK=True
-[<module>:54:{n:5}]         icmp6 checksum=f28c, ok=True
-[<module>:60:{n:5}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:6}]    006: checksum_OK=True
-[<module>:54:{n:6}]         icmp6 checksum=17cf, ok=True
-[<module>:60:{n:6}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:7}]    007: checksum_OK=True
-[<module>:54:{n:7}]         icmp6 checksum=f473, ok=True
-[<module>:60:{n:7}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:8}]    008: checksum_OK=True
-[<module>:54:{n:8}]         icmp6 checksum=f28c, ok=True
-[<module>:60:{n:8}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:9}]    009: checksum_OK=True
-[<module>:54:{n:9}]         icmp6 checksum=00d5, ok=True
-[<module>:60:{n:9}]         icmp6 checksum=9abc, ok=False
-[<module>:49:{n:10}]    010: checksum_OK=True
-[<module>:54:{n:10}]         icmp6 checksum=f28c, ok=True
-[<module>:60:{n:10}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:1}]    001: checksum_OK=True
+[<module>:55:{n:1}]         icmp6 checksum=c165, ok=True
+[<module>:61:{n:1}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:2}]    002: checksum_OK=True
+[<module>:55:{n:2}]         icmp6 checksum=5ecd, ok=True
+[<module>:61:{n:2}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:3}]    003: checksum_OK=True
+[<module>:55:{n:3}]         icmp6 checksum=5ecd, ok=True
+[<module>:61:{n:3}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:4}]    004: checksum_OK=True
+[<module>:55:{n:4}]         icmp6 checksum=6151, ok=True
+[<module>:61:{n:4}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:5}]    005: checksum_OK=True
+[<module>:55:{n:5}]         icmp6 checksum=f28c, ok=True
+[<module>:61:{n:5}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:6}]    006: checksum_OK=True
+[<module>:55:{n:6}]         icmp6 checksum=17cf, ok=True
+[<module>:61:{n:6}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:7}]    007: checksum_OK=True
+[<module>:55:{n:7}]         icmp6 checksum=f473, ok=True
+[<module>:61:{n:7}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:8}]    008: checksum_OK=True
+[<module>:55:{n:8}]         icmp6 checksum=f28c, ok=True
+[<module>:61:{n:8}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:9}]    009: checksum_OK=True
+[<module>:55:{n:9}]         icmp6 checksum=00d5, ok=True
+[<module>:61:{n:9}]         icmp6 checksum=9abc, ok=False
+[<module>:50:{n:10}]    010: checksum_OK=True
+[<module>:55:{n:10}]         icmp6 checksum=f28c, ok=True
+[<module>:61:{n:10}]         icmp6 checksum=9abc, ok=False
