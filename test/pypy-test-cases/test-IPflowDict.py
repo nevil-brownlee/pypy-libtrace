@@ -13,9 +13,9 @@ class flow():
         self.ipf = ipf;  self.first_n = first_n
         self.fwd = 1;  self.rev = 0
 
-test_dict = {}
-
 def test_uri(uri, tag=''):
+    test_dict = {}
+
     t = plt.trace(uri)
     t.start()
 
@@ -35,14 +35,14 @@ def test_uri(uri, tag=''):
 
         fwd = ipf.fwd_key
         test_print("fwd =",  tag+get_tag("n:"+str(n)))
-        for b in fwd:
-            test_print(" %02x" % ord(b))
+        for b in fwd.encode('cp437'):
+            test_print(" %02x" % b)
+        test_println('')
 
         rev = ipf.rev_key
         test_println('')
-        test_print("rev =",tag+get_tag("n:"+str(n)))
-        for b in rev:
-            test_print(" %02x" % ord(b))
+        for b in rev.encode('cp437'):
+            test_print(" %02x" % b)
         test_println('')
 
         v = test_dict.get(fwd)
@@ -62,6 +62,7 @@ def test_uri(uri, tag=''):
     test_println('')
 
     sk = sorted(test_dict)
+    tot_pkts = 0
     for dk in sk:
         #print "dk = >%s<, val[k] = %d" % (dk, test_dict[dk])
         val = test_dict[dk]
@@ -70,6 +71,10 @@ def test_uri(uri, tag=''):
             val.first_n, val.fwd, val.rev,
             f.version, f.proto, f.src_port, f.dst_port,
             f.src_prefix, f.dst_prefix), tag+get_tag("n:"+str(n)))
+        tot_pkts += val.fwd+val.rev
+    test_println("%s: n = %d, nip = %d, tot_pkts = %d, OK = %s" % \
+        (uri, n, nip, tot_pkts, tot_pkts == nip))
+    test_println("")
 
 test_uri("pcapfile:anon-v4.pcap", get_tag())
 test_uri("pcapfile:anon-v6.pcap", get_tag())

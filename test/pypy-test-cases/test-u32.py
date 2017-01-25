@@ -15,9 +15,9 @@ for b in ba: test_print("%02x " % b)
 test_println('')
 
 test_print('', get_tag())
-test_print("short[2] = %04x" % nk.ba_get_short(ba,2))
-test_print("short[4] = %04x" % nk.ba_get_short(ba,4))
-test_print("long[2]  = %08x" % nk.ba_get_long(ba,2))
+test_print("short[2] = %04x " % nk.ba_get_short(ba,2))
+test_print("short[4] = %04x " % nk.ba_get_short(ba,4))
+test_print("long[2]  = %08x " % nk.ba_get_long(ba,2))
 test_println("long[5]  = %s\n" % nk.ba_get_long(ba,5))
 
 a=5;  b=6

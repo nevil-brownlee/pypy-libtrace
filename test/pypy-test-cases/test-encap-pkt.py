@@ -13,7 +13,7 @@ def compare_objects(a, b, msg, tag=''):
    if a.data != b.data:  # Compare bytearrays
        print_data("a =", 5, a.data, tag+get_tag())
        print_data("b =", 5, b.data, tag+get_tag())
-       test_println(">>> %s <<<" % msg, tag+get_tag())
+       test_println (">>> %s <<<" % msg, tag+get_tag())
        sys.exit()
 
 n = nip = 0;  offset = 12

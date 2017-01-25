@@ -37,17 +37,17 @@ while np != 12:
         test_println("   wlen=%d, caplen=%d, src=%s, dst=%s" % (
             p.wire_len, p.capture_len, ip.src_prefix, ip.dst_prefix), get_tag("np:"+str(np)))
 
-n = np
+n = 0
 for pkt in t:
     n += 1  # Wireshark uses 1-org packet numbers
     test_println("n=%d" % (n), get_tag())
     linktype = pkt.linktype
     ethertype = pkt.ethertype
     test_println("n=%d, linktype=%d, ethertype=%04x " % (n, linktype, ethertype), get_tag("n:"+str(n)))
-    if n == 25:
+    if n == 5:
         break
     ip = pkt.ip
-    if not ip or pkt.ip6:
+    if not ip:
         continue
  
     pt = pkt.time
@@ -67,9 +67,9 @@ for pkt in t:
 #    print "io = {0}".format(io)
 
     ip.traffic_class = 55;
-    ip.hop_limit = 123;
-    test_println("%d == ver=%d, %s -> %s, proto=%d, tclass=%d, ttl=%d, hlen=%d, plen=%d" % (
-        n, ip.version, ip.src_prefix, ip.dst_prefix,
+    ip.hop_limit = (123);
+    test_println("== ver=%d, %s -> %s, proto=%d, tclass=%d, ttl=%d, hlen=%d, plen=%d" % (
+        ip.version, ip.src_prefix, ip.dst_prefix,
         ip.proto, ip.traffic_class, ip.hop_limit, ip.hdr_len, ip.pkt_len), get_tag("n:"+str(n)))
 
     ethertype = ip.ethertype

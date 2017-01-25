@@ -44,8 +44,8 @@ for pkt in t:
         sax = 8+hln;  tax = sax+pln+hln  # Change sender and
         test_println("sax=%d, tax=%d" % (sax, tax), get_tag("n:"+str(n)))
 
-        # CAUTION: python may replace a slice by a longer one,
-        #   thus adding elements into a C array (slice).
+        # CAUTION: python will replace a slice by a longer on,
+        #   thus adding elements into a (byte)array.
         #   Here we're careful to replace 4 byte with another 4!
         d[sax:sax+pln] = new_addr     # target addresses in d
         d[tax:tax+pln] = new_addr
@@ -58,23 +58,4 @@ for pkt in t:
     if n == 5:
         break
 
-ot.close_output();  t.close
-
-t1 = get_example_trace(in_fn);  p1 = plt.packet()
-t2 = plt.trace('pcapfile:arp-changed.pcap');  t2.start()
-
-for p2 in t2:
-    t1.read_packet(p1)
-    l21= p1.layer2.data;  l22 = p2.layer2.data
-    old = "old:"
-    for b1 in l21:
-        old += " %02x" % b1
-    test_println(old, get_tag("n:"+str(n)))
-    new = "new:"
-    for b2 in l22:
-        new += " %02x" % b2
-    test_println(new, get_tag("n:"+str(n)))
-
-t1.close();  t2.close()
-
-    
+ot.close_output;  t.close

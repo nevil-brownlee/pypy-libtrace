@@ -29,7 +29,7 @@ for pkt in t:
                 icmp.checksum = 0x5678
             test_println("        icmp checksum=%04x, ok=%s" % (
                 icmp.checksum, icmp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except ValueError as e:
             test_println("        .icmp. %s" % e, get_tag("n:"+str(n)))
 
     if n == 10:
@@ -46,6 +46,7 @@ for pkt in t:
     ip6 = pkt.ip6
     if not ip6:
         continue
+
     test_println("   %03d: checksum_OK=%s" % (n, ip6.test_trans_cksm()), get_tag("n:"+str(n)))
     icmp6 = ip6.icmp6
     if icmp6:
@@ -58,7 +59,7 @@ for pkt in t:
                 icmp6.checksum = 0x9ABC
             test_println("        icmp6 checksum=%04x, ok=%s" % (
                 icmp6.checksum, icmp6.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except ValueError as e:
             test_println("        .icmp6. %s" % e, get_tag("n:"+str(n)))
 
     if n == 10:

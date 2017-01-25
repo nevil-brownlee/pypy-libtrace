@@ -33,7 +33,7 @@ for pkt in t:
                 tcp.checksum = 0x1234
             test_println("        tcp checksum=%04x, ok=%s" % (
                 tcp.checksum, tcp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except Exception as e:
+        except ValueError as e:
             test_println("        .tcp. %s" % e, get_tag("n:"+str(n)))
 
     udp = ip.udp
@@ -49,7 +49,7 @@ for pkt in t:
                 udp.checksum = 0x5678
             test_println("        udp checksum=%04x, ok=%s" % (
                 udp.checksum, udp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except Exception as e:
+        except ValueError as e:
             test_println("        .udp. %s" % e, get_tag("n:"+str(n)))
 
     #if n == 20:

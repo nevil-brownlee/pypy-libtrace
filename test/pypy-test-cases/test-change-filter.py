@@ -34,7 +34,7 @@ for pkt in t:
             print_data("UDP:", offset, udp.data, 64, get_tag(str(nfp)))
             upl = udp.payload
             print_data("udp.payload:", offset, upl.data, 64, get_tag("nfp:"+str(nfp)))
-            upl = pkt.udp.udp_payload  # pkt is parent of udp!
+            upl = pkt.udp.udp_payload
             print_data("udp.udp_pyld:", offset, upl.data, 64, get_tag("nfp:"+str(nfp)))
             upl = pkt.udp_payload
             print_data("udp_payload:", offset, upl.data, 64, get_tag("nfp:"+str(nfp)))
@@ -45,12 +45,12 @@ for pkt in t:
                 t.start
         elif tcp:  # Then we changed our filter to TCP
             tpl = tcp.payload
-            if not tpl:  # First pkt with payload is pkt 25
+            if not tpl:
                 continue
             print_tcp(tcp, 12, get_tag("nfp:"+str(nfp)))
             print_data("TCP:", offset, tcp.data, 64, get_tag("nfp:"+str(nfp)))
             print_data("tcp.payload:", offset, tpl.data, 64, get_tag("nfp:"+str(nfp)))
-            tpl = pkt.tcp.tcp_payload  # pkt is parent of tcp!
+            tpl = pkt.tcp.tcp_payload
             print_data("tcp.tcp_pyld:", offset, tpl.data, 64, get_tag("nfp:"+str(nfp)))
             tpl = pkt.tcp_payload
             print_data("tcp_payload:", offset, tpl.data, 64, get_tag("nfp:"+str(nfp)))

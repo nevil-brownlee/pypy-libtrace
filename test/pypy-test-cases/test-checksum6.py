@@ -25,7 +25,7 @@ for pkt in t:
                 tcp.checksum = 0x1234
             test_println("        tcp checksum=%04x, ok=%s" % (
                 tcp.checksum, tcp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except ValueError as e:
             test_println("        .tcp. %s" % e, get_tag("n:"+str(n)))
 
     udp = ip6.udp
@@ -39,7 +39,7 @@ for pkt in t:
                 udp.checksum = 0x5678
             test_println("        udp checksum=%04x, ok=%s" % (
                 udp.checksum, udp.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except ValueError as e:
             test_println("        .udp. %s" % e, get_tag("n:"+str(n)))
 
     icmp6 = ip6.icmp6
@@ -53,7 +53,7 @@ for pkt in t:
                 icmp6.checksum = 0x9abc
             test_println("        icmp6 checksum=%04x, ok=%s" % (
                 icmp6.checksum, icmp6.test_trans_cksm()), get_tag("n:"+str(n)))
-        except ValueError, e:
+        except ValueError as e:
             test_println("        .icmp6. %s" % e, get_tag("n:"+str(n)))
 
     #if n == 5:

@@ -2,7 +2,7 @@
 #
 # test-ipp.py: Test program for the ipp module
 
-import ipp, sys, re
+import sys
 from plt_testing import *
 
 def test_string(name, val):
@@ -17,7 +17,7 @@ def test_string(name, val):
                 nps = sc.replace("!", ":0:");
                 test_println(">>> nps = %s" % nps, get_tag())
             
-    except Exception, err:
+    except Exception as err:  # py3 as instead of ,
         #traceback.print_exc()
         test_println("err = %s" % err, get_tag())
 
