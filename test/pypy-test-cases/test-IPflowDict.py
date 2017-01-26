@@ -35,14 +35,14 @@ def test_uri(uri, tag=''):
 
         fwd = ipf.fwd_key
         test_print("fwd =",  tag+get_tag("n:"+str(n)))
-        for b in fwd.encode('cp437'):
-            test_print(" %02x" % b)
+        for b in fwd:
+            test_print(" %02x" % ord(b))
         test_println('')
 
         rev = ipf.rev_key
         test_println('')
-        for b in rev.encode('cp437'):
-            test_print(" %02x" % b)
+        for b in rev:
+            test_print(" %02x" % ord(b))
         test_println('')
 
         v = test_dict.get(fwd)

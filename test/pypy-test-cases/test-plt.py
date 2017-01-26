@@ -54,7 +54,7 @@ for pkt in t:
     test_println("time = >{0}<".format(pt), get_tag("n:"+str(n)))
     # pkt.time = 20.5
     # print "seconds=%f, ts_sec=%u, erf_time=%llu" % (pkt.seconds, pkt.ts_sec, pkt.erf_time)
-    test_println("seconds={0}, ts_sec={1}, erf_time={2}".format(pkt.seconds, pkt.ts_sec, pkt.erf_time), get_tag("n:"+str(n)))
+    test_println("seconds=%.4f, ts_sec=%d, erf_time=%s" % (pkt.seconds, pkt.ts_sec, pkt.erf_time), get_tag("n:"+str(n)))
 
     wlen = pkt.wire_len;  clen = pkt.capture_len
     test_println("n=%d, wlen=%d, clen=%d" % (n, wlen, clen), get_tag("n:"+str(n)))

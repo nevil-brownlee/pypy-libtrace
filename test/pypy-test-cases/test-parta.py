@@ -20,7 +20,7 @@ for pkt in t:
     last_ts = pkt.seconds
     if not start_ts:
         test_println("pkt.seconds=%f, ts_sec=%d, pkt_time=%s" % (
-           last_ts, pkt.ts_sec, pkt.time), get_tag("np:"+str(np)))
+            last_ts, pkt.ts_sec, str(pkt.time)[0:24]), get_tag("np:"+str(np)))
         start_ts = last_ts
     nb += pkt.capture_len
 

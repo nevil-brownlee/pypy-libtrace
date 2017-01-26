@@ -45,7 +45,7 @@ def print_data(msg, offset, data, mxlen, tag=''):
             sys.stdout.write('  ')
 ##        print(" %02x" % (data[j]), end='')
         sys.stdout.write(" %02x" % (data[j]))
-    print()
+    print('')
 
 def print_ip(ip, offset, tag=''):
     margin = ' ' * offset
@@ -110,7 +110,7 @@ tag=''):  # IPv4 only  (IPv6 uses ICMP6 protocol)
     margin = ' ' * offset
     print(tag+get_tag()+"%sICMP, type=%u, code=%u, checksum=%04x,  wlen=%d, clen=%d, %s" % (
         margin, icmp.type, icmp.code, icmp.checksum,
-        icmp.wire_len, icmp.capture_len, icmp.time))
+        icmp.wire_len, icmp.capture_len, str(icmp.time)[0:24]))
     pd = p = icmp.payload
     type = icmp.type;  pt = 'IP  '
     if type == 0 or type == 8:  # Echo Reply, Echo Request
@@ -154,7 +154,7 @@ def print_icmp6(icmp6, offset, tag=''):  # IPv6 only
     margin = ' ' * (offset-3)
     print(tag+get_tag()+"%sICMP6: stype=%u, code=%u, checksum=%04x, wlen=%d, clen=%d, %s" % (
         margin, icmp6.type, icmp6.code, icmp6.checksum,
-        icmp6.wire_len, icmp6.capture_len, icmp6.time))
+        icmp6.wire_len, icmp6.capture_len, str(icmp6.time)[0:24]))
     margin = ' ' * offset
     type = icmp6.type;  pd = p = icmp6.payload;  pt = 'Echo'
     if type == 1:  # Destination Unreachable
