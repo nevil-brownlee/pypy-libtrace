@@ -26,7 +26,7 @@
 [<module>:43] n=1
 [<module>:46:{n:1}] n=1, linktype=2, ethertype=0800 
 [<module>:54:{n:1}] time = >2008-03-29 11:22:20.180375<
-[<module>:57:{n:1}] seconds=1206742940.180375, ts_sec=1206742940, erf_time=5182921462753594966
+[<module>:57:{n:1}] seconds=1206742940.1804, ts_sec=1206742940, erf_time=5182921462753594966
 [<module>:60:{n:1}] n=1, wlen=78, clen=74
 [<module>:64:{n:1}]    ver=4, 207.209.4.47 -> 71.45.40.215, proto=6, tclass=0, ttl=64, hlen=5, plen=60
 [<module>:73:{n:1}] == ver=4, 207.209.4.47 -> 71.45.40.215, proto=6, tclass=55, ttl=123, hlen=5, plen=60
@@ -36,7 +36,7 @@
 [<module>:43] n=2
 [<module>:46:{n:2}] n=2, linktype=2, ethertype=0800 
 [<module>:54:{n:2}] time = >2008-03-29 11:22:20.237163<
-[<module>:57:{n:2}] seconds=1206742940.237163, ts_sec=1206742940, erf_time=5182921462997497568
+[<module>:57:{n:2}] seconds=1206742940.2372, ts_sec=1206742940, erf_time=5182921462997497568
 [<module>:60:{n:2}] n=2, wlen=79, clen=75
 [<module>:64:{n:2}]    ver=4, 207.209.4.47 -> 207.209.4.79, proto=17, tclass=0, ttl=64, hlen=5, plen=61
 [<module>:73:{n:2}] == ver=4, 207.209.4.47 -> 207.209.4.79, proto=17, tclass=55, ttl=123, hlen=5, plen=61
@@ -46,7 +46,7 @@
 [<module>:43] n=3
 [<module>:46:{n:3}] n=3, linktype=2, ethertype=0800 
 [<module>:54:{n:3}] time = >2008-03-29 11:22:20.364248<
-[<module>:57:{n:3}] seconds=1206742940.364248, ts_sec=1206742940, erf_time=5182921463543323487
+[<module>:57:{n:3}] seconds=1206742940.3642, ts_sec=1206742940, erf_time=5182921463543323487
 [<module>:60:{n:3}] n=3, wlen=78, clen=74
 [<module>:64:{n:3}]    ver=4, 71.45.40.215 -> 207.209.4.47, proto=6, tclass=0, ttl=48, hlen=5, plen=60
 [<module>:73:{n:3}] == ver=4, 71.45.40.215 -> 207.209.4.47, proto=6, tclass=55, ttl=123, hlen=5, plen=60
@@ -55,8 +55,8 @@
 [<module>:84:{n:3}] now 1.2.3.4 => 5.6.7.8 
 [<module>:43] n=4
 [<module>:46:{n:4}] n=4, linktype=2, ethertype=0800 
-[<module>:54:{n:4}] time = >2008-03-29 11:22:20.364281<
-[<module>:57:{n:4}] seconds=1206742940.364282, ts_sec=1206742940, erf_time=5182921463543469516
+[<module>:54:{n:4}] time = >2008-03-29 11:22:20.364282<
+[<module>:57:{n:4}] seconds=1206742940.3643, ts_sec=1206742940, erf_time=5182921463543469516
 [<module>:60:{n:4}] n=4, wlen=58, clen=54
 [<module>:64:{n:4}]    ver=4, 207.209.4.47 -> 71.45.40.215, proto=6, tclass=0, ttl=64, hlen=5, plen=40
 [<module>:73:{n:4}] == ver=4, 207.209.4.47 -> 71.45.40.215, proto=6, tclass=55, ttl=123, hlen=5, plen=40
