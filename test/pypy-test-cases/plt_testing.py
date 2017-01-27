@@ -2,7 +2,11 @@
 # plt-testing.py:  Support routines for testing python-libtrace
 # Copyright (C) 2015, Nevil Brownlee, U Auckland | WAND
 
-#from plt import *  # Also imports ipp and datetime
+# from plt import *  # Also imports ipp and datetime
+
+# On Ubuntu/32-bit datetime.time differ in last digit (microsecond)
+#   we now truncate the time string to 24 chars (dro last 2 digits)
+
 
 import plt, ipp
 import datetime  # for test-plt.py
@@ -211,15 +215,12 @@ def print_icmp6(icmp6, offset, tag=''):  # IPv6 only
     print_data(t, offset+3, pd, 64, tag+get_tag())
 
 def test_println(message, tag=''):
-##    #print(tag+' '+message)  # py2
     print(tag+' '+message)
 
 def test_print(message, tag=''):
     if tag=='':
-##        print(message.encode(encoding='UTF-8'), end='')
         sys.stdout.write(message)
     else:
-##        print(tag+' '+message.encode(encoding='UTF-8'), end='')
         sys.stdout.write(tag+' '+message)
 
 def get_tag(message=None):
