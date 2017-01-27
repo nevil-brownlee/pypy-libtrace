@@ -1,4 +1,4 @@
-[get_example_trace:26]fn = anon-v6.pcap
+[get_example_trace:30]fn = anon-v6.pcap
 
 [<module>:21:{n:1}]   1     tcp checksum=d9ea, ok=True
 [<module>:27:{n:1}]         tcp checksum=1234, ok=False

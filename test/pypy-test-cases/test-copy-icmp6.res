@@ -1,4 +1,4 @@
-[get_example_trace:26]fn = icmp6-sample.pcap
+[get_example_trace:30]fn = icmp6-sample.pcap
 
 [<module>:38] 36 packets examined
 

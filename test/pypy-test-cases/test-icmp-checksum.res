@@ -1,4 +1,4 @@
-[get_example_trace:26]fn = icmp-sample.pcap
+[get_example_trace:30]fn = icmp-sample.pcap
 
 [<module>:19:{n:1}]    001: checksum=79e4, OK=True
 [<module>:25:{n:1}]         icmp checksum=e2a2, ok=True
@@ -30,7 +30,7 @@
 [<module>:19:{n:10}]    010: checksum=7263, OK=True
 [<module>:25:{n:10}]         icmp checksum=e062, ok=True
 [<module>:31:{n:10}]         icmp checksum=5678, ok=False
-[get_example_trace:26]fn = icmp6-sample.pcap
+[get_example_trace:30]fn = icmp6-sample.pcap
 
 [<module>:50:{n:1}]    001: checksum_OK=True
 [<module>:55:{n:1}]         icmp6 checksum=c165, ok=True

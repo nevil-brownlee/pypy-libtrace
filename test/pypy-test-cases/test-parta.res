@@ -1,4 +1,4 @@
-[get_example_trace:26]fn = 1000packets.pcap.gz
+[get_example_trace:30]fn = 1000packets.pcap.gz
 
 [<module>:23:{np:1}] pkt.seconds=189440.000044, ts_sec=189440, pkt_time=1970-01-03 16:37:20.0000
 [<module>:58] Packet count: 1000

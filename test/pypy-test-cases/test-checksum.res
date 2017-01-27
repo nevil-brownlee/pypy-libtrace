@@ -1,4 +1,4 @@
-[get_example_trace:26]fn = anon-v4.pcap
+[get_example_trace:30]fn = anon-v4.pcap
 
 [<module>:18]    008: checksum=4d73, OK=True
 [<module>:23:{n:8}]      checksum=cdef, OK=False
