@@ -3,6 +3,10 @@
 Release notes for pypy-libtrace
 -------------------------------
 
+pypy-libtrace-3.0, January 2017
+  Modify all files to work with pypy3, and that they
+    continue to work properly with pypy2
+
 pypy-libtrace-2.0, April 2016
   Added checksum_ok attribute to TCP and UDP classes
   Made sure that *.py in doc/examples work properly
