@@ -41,9 +41,7 @@ class _ldns_rr(object):
 
     def get_owner(self):
         owner = lib.ldns_rr_owner(self.rr)
-        owner_str = lib.ldns_rdf2str(owner)
-        rs = ffi.buffer(owner_str, owner._size-1)        
-        return rs
+        return ffi.string(lib.ldns_rdf2str(owner)).decode('ascii')
     owner = property(get_owner)
 
     def get_type(self):
@@ -59,7 +57,8 @@ class _ldns_rr(object):
         len = lib.ldns_rr_rd_count(self.rr)
         for j in range(len):
             rdf = lib.ldns_rr_rdf(self.rr, j)
-            rdl.append(str(plt.ca2str(lib.ldns_rdf2str(rdf))))
+            rdf_s = ffi.string(lib.ldns_rdf2str(rdf)).decode('ascii')
+            rdl.append(rdf_s)
         return ' '.join(rdl)
     rdata = property(get_rdata)
 
