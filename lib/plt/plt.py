@@ -2,7 +2,7 @@
 #
 # plt.py:  plt objects iplemented in python
 #
-# Copyright (C) 2016 by Nevil Brownlee, U Auckland | WAND
+# Copyright (C) 2016-2017 by Nevil Brownlee, U Auckland | WAND
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ from cplt import ffi, lib
 import ipp
 import datetime, string, sys
 
-PLTversion    = "1.1"  # 23 Nov 15 (NZDT)
+PLTversion    = "3.0"  # 27 Jan 17 (NZDT)
 
 def version():
     return PLTversion
