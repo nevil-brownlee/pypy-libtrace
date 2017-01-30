@@ -65,8 +65,8 @@ distclean: clean
 	$(RM)  $(BKFILES)
 
 
-#install-pypy2:
-#	@make VERSION=2 install
+install-pypy2:
+	@make VERSION=2 install  # Needs ln -s pypy2
 
 install-pypy3: 
 	@make VERSION=3 install
