@@ -31,19 +31,10 @@ def usage():
 
 #return python cmd according to the python interpreter version
 def get_python_cmd():
-#    return ('python', 'python3')[sys.version_info[0]-2]
-    dir = os.path.basename(Options.dir)
-    if dir == 'pypy-test-cases':
+    version = sys.version_info[0]
+    if version == 2:
         return 'pypy'
-    elif dir == 'pypy3-test-cases':
-        return 'pypy3'
-    elif dir == 'v2-test-cases':
-        return 'python'
-    elif dir == 'v3-test-cases':
-        return 'python3'
-    sys.stdout.write(Options.file+" is not a test program\n")
-    return sys.exit()
-
+    return 'pypy3'
 
 # checks command-line arguments
 def check_args(options):
