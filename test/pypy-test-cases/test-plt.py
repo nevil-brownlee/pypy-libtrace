@@ -51,7 +51,7 @@ for pkt in t:
         continue
  
     pt = pkt.time
-    test_println("time = >{0}<".format(pt), get_tag("n:"+str(n)))
+    test_println("time = >%s<" % str(pt)[0:24], get_tag("n:"+str(n)))
     # pkt.time = 20.5
     # print "seconds=%f, ts_sec=%u, erf_time=%llu" % (pkt.seconds, pkt.ts_sec, pkt.erf_time)
     test_println("seconds=%.4f, ts_sec=%d, erf_time=%s" % (pkt.seconds, pkt.ts_sec, pkt.erf_time), get_tag("n:"+str(n)))
