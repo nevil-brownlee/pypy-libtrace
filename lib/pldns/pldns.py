@@ -2,7 +2,7 @@
 #
 # pldns.py:  pldns objects iplemented in python
 #
-# Copyright (C) 2016 by Nevil Brownlee, U Auckland | WAND
+# Copyright (C) 2016-2017 by Nevil Brownlee, U Auckland | WAND
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class _ldns_rr(object):
     rdata = property(get_rdata)
 
     def get_str(self):
-        return plt.ca2str(lib.ldns_rr2str(self.rr))
+        return ffi.string(lib.ldns_rr2str(self.rr)).decode('ascii')
     str = property(get_str)
         
 
