@@ -67,13 +67,13 @@ def test_uri(uri, tag=''):
             fwd = ipf.fwd_key
             test_print("fwd =", tag+get_tag("n:"+str(n)))
             for b in fwd.encode(encoding='cp437'):
-                test_print(" %02x" % b)
+                test_print_hex(b)
             test_println('')
 
             hk = ipf.home_key
             test_print("hom =", tag+get_tag("n:"+str(n)))
             for b in hk.encode(encoding='cp437'):
-                test_print(" %02x" % b)
+                test_print_hex(b)
             test_println('')
 
     t.close()

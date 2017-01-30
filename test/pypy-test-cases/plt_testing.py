@@ -230,3 +230,11 @@ def get_tag(message=None):
         return ('['+function_name+':'+str(line_number)+']')
     else:
         return ('['+function_name+':'+str(line_number)+':'+'{'+message+'}'+']')
+
+def test_print_hex(b):
+    if version == 2:
+        sys.stdout.write(" %02x" % ord(b))
+    else:
+        sys.stdout.write(" %02x" % b)     
+
+version = sys.version_info[0]  # 2 for pypy, 3 for pypy3
