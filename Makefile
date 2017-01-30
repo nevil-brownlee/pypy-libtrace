@@ -23,6 +23,7 @@ SHELL=/bin/sh
 RM=rm -rf # Don't complain if files don't exist
 T_MAKE=	make
 BKFILES=build *~ \#* .*~
+VERSION=
 
 .PHONY:	all clean distclean install
 
@@ -35,24 +36,24 @@ install:
 
 
 ipp:
-	cd lib/ipp; pypy build-cipp.py
-	cd lib/ipp; pypy cipp-setup.py install
-	cd lib/ipp; pypy ipp-setup.py install
+	cd lib/ipp; pypy$(VERSION) build-cipp.py
+	cd lib/ipp; pypy$(VERSION) cipp-setup.py install
+	cd lib/ipp; pypy$(VERSION) ipp-setup.py install
 
 plt:
-	cd lib/plt; pypy build-cplt.py
-	cd lib/plt; pypy cplt-setup.py install
-	cd lib/plt; pypy plt-setup.py install
+	cd lib/plt; pypy$(VERSION) build-cplt.py
+	cd lib/plt; pypy$(VERSION) cplt-setup.py install
+	cd lib/plt; pypy$(VERSION) plt-setup.py install
 
 pldns:
-	cd lib/pldns; pypy build-cpldns.py
-	cd lib/pldns; pypy cpldns-setup.py install
-	cd lib/pldns; pypy pldns-setup.py install
+	cd lib/pldns; pypy$(VERSION) build-cpldns.py
+	cd lib/pldns; pypy$(VERSION) cpldns-setup.py install
+	cd lib/pldns; pypy$(VERSION) pldns-setup.py install
 
 natkit:
-	cd lib/natkit; pypy build-cnatkit.py
-	cd lib/natkit; pypy cnatkit-setup.py install
-	cd lib/natkit; pypy natkit-setup.py install
+	cd lib/natkit; pypy$(VERSION) build-cnatkit.py
+	cd lib/natkit; pypy$(VERSION) cnatkit-setup.py install
+	cd lib/natkit; pypy$(VERSION) natkit-setup.py install
 
 clean:
 	cd lib/ipp; $(RM) $(BKFILES)
@@ -63,14 +64,9 @@ clean:
 distclean: clean
 	$(RM)  $(BKFILES)
 
-#py2: 
-#	@make VERSION=2 build 
-#
-#py3: 
-#	@make VERSION=3 build
-#
-#install-py2: 
+
+#install-pypy2:
 #	@make VERSION=2 install
-#
-#install-py3: 
-#	@make VERSION=3 install
+
+install-pypy3: 
+	@make VERSION=3 install
