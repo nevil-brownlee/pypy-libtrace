@@ -116,6 +116,9 @@ class IPprefix(object):  # New-style class, child of object
         else:
             return fbd
 
+    def is_rfc1918(self):
+        return self.get_is_rfc1918()
+            
     def is_prefix(self, other):
         fbd = self.first_bit_different(other)
         return fbd >= self.i_len
