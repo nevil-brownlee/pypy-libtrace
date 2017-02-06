@@ -51,7 +51,7 @@ class IPprefix(object):  # New-style class, child of object
                 raise ValueError("Prefix length > 32 (IPv4) or > 128 (IPv6)")
             self.i_len = args[2]  # Prefix length (may be None)
         else:
-            self.i_len = pref_max
+            self.i_len = None  #####pref_max
 
     def __str__(self):
         #a = ffi.string(lib.ipaddr2str(self.i_ver, self.i_addr))
@@ -61,13 +61,17 @@ class IPprefix(object):  # New-style class, child of object
             pref_max = 32
         else:
             pref_max = 128
-        if self.i_len < pref_max:
+        if self.i_len:  #####self.i_len < pref_max:
             return (a+'/'+str(self.i_len))
         else:
             return a
 
     def __hash__(self):
-        return hash((self.i_ver, str(ffi.buffer(self.i_addr)),
+        #return hash((self.i_ver, str(ffi.buffer(self.i_addr)),
+        a_len = 4
+        if self.version == 6:
+            a_len = 16
+        return hash((self.i_ver, ffi.unpack(self.i_addr, a_len),
             self.i_len))  # tuples are hashable
 
     def cmp_addr(self, other):
@@ -78,11 +82,14 @@ class IPprefix(object):  # New-style class, child of object
     def cmp(self, other):  # Rich compare fundtions
         sc = self.cmp_addr(other)
         if sc == 0:
-            if self.i_len != other.i_len:
-                if self.i_len > other.i_len:
-                    return 1
-                else:
-                    return -1
+            if self.i_len and other.i_len:
+                if self.i_len != other.i_len:
+                    if self.i_len > other.i_len:
+                        return 1
+                    else:
+                        return -1
+            else:
+                return 0
         return sc
         
     def __lt__(self, other):
@@ -108,17 +115,17 @@ class IPprefix(object):  # New-style class, child of object
         #if (not self.i_len) or (not other.i_len):
         #    raise ValueError("One or both IPprefixes has no length")
         fbd = lib.c_fbd(self.i_ver, self.addr, other.addr)
-        min_len = self.i_len
-        if other.i_len < min_len:
-            min_len = other.i_len
-        if fbd > min_len:
-            return min_len
+        if self.i_len and other.i_len:
+            min_len = self.i_len
+            if other.i_len < min_len:
+                min_len = other.i_len
+            if fbd > min_len:
+                return min_len
+            else:
+                return fbd
         else:
             return fbd
 
-    def is_rfc1918(self):
-        return self.get_is_rfc1918()
-            
     def is_prefix(self, other):
         fbd = self.first_bit_different(other)
         return fbd >= self.i_len
