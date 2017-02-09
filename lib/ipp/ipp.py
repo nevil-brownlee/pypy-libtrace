@@ -67,12 +67,10 @@ class IPprefix(object):  # New-style class, child of object
             return a
 
     def __hash__(self):
-        #return hash((self.i_ver, str(ffi.buffer(self.i_addr)),
-        a_len = 4
-        if self.version == 6:
-            a_len = 16
-        return hash((self.i_ver, ffi.unpack(self.i_addr, a_len),
-            self.i_len))  # tuples are hashable
+        len = self.i_len
+        if not len:
+            len = 129
+        return lib.ipp_hash(self.i_ver, self.i_addr, len)
 
     def cmp_addr(self, other):
         if self.i_ver != other.i_ver:
