@@ -27,6 +27,7 @@ ffi = FFI()
 ffi.cdef("char *ipaddr2str(int version, uint8_t *addr);")
 ffi.cdef("int str2ipaddr(uint8_t *ba, int ver, char *s);")
 ffi.cdef("int caddrcmp(int version, uint8_t *a, uint8_t *b);")
+ffi.cdef("long ipp_hash(int ver, uint8_t *sa, int len);")
 ffi.cdef("void c_mask_network(uint8_t *a, int sz, uint8_t *b, int len);")
 ffi.cdef("int c_bit_set(int version, uint8_t *a, int bn);")
 ffi.cdef("int c_fbd(int version, uint8_t *a, uint8_t *b);")
@@ -65,6 +66,15 @@ int str2ipaddr(uint8_t *ba, int ver, char *s) {
 
 int caddrcmp(int version, uint8_t *a, uint8_t *b) {
     return memcmp(a, b, version == 4 ? 4 : 16);  /* Returns -128, 0, 128 ! */
+   }
+
+long ipp_hash(int ver, uint8_t *sa, int len) {
+   int nb, j;  uint32_t *sa32;  long hash;
+   hash = (len*63997 << 8) + (uint8_t)ver*41;
+   sa32 = (uint32_t *)sa;
+   nb = (ver == 4 ? 1 : 4);  /* 32-bit groups */
+   for (j = 0; j != nb; j += 1) hash ^= sa32[j]*99991;
+   return (long)hash;
    }
 
 uint8_t fb_mask[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
