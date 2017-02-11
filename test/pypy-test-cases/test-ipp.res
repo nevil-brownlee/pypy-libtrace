@@ -1,7 +1,7 @@
 [test_string:9]  p61 = 2001:df0:0:321:1:2:3:4/128  
-[test_string:12] p61 = 2001:df0:0:321:1:2:3:4
+[test_string:12] p61 = 2001:df0:0:321:1:2:3:4/128
 [test_string:9]  p62 = 2001:df0:0:0:1:2:3:4/128  
-[test_string:12] p62 = 2001:df0::1:2:3:4
+[test_string:12] p62 = 2001:df0::1:2:3:4/128
 [test_string:9]  p63 = 2001:df0:0:0:1:2::  
 [test_string:12] p63 = 2001:df0::1:2:0:0
 [test_string:9]  p64 = 2001:df0:0:abcd::1  
@@ -61,5 +61,5 @@ p4.is_prefix(q4):  result = False, False (T, F)
 [<module>:81] p61.first_bit_different(p68) = 77 (77)
 
 [<module>:83] q4 = 130.216.128.0/25, complement = 125.39.127.255/25
-[<module>:84] p68 = 2001:df0:0:321:5:2:3:4, complement = dffe:f20f:ffff:fcde:fffa:fffd:fffc:fffb
+[<module>:84] p68 = 2001:df0:0:321:5:2:3:4/128, complement = dffe:f20f:ffff:fcde:fffa:fffd:fffc:fffb/128
 
