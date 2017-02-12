@@ -74,7 +74,7 @@ long ipp_hash(int ver, uint8_t *sa, int len) {
    sa32 = (uint32_t *)sa;
    nb = (ver == 4 ? 1 : 4);  /* 32-bit groups */
    for (j = 0; j != nb; j += 1) hash ^= sa32[j]*99991;
-   return (long)hash;
+   return (long)(hash & 0x7FFFFFFF);  /* Don't return -1 */
    }
 
 uint8_t fb_mask[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
