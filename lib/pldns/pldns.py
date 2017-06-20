@@ -20,7 +20,7 @@
 
 from cpldns import ffi, lib
 import plt
-import string
+import string, sys
 
 def opcodestr(opcode):  # Module methods that return strings
     return ffi.string(lib.ldns_pkt_opcode2str(opcode)).decode('ascii')
@@ -133,10 +133,17 @@ class _ldns_object(object):
 
 def ldns(obj):  # Objects have a .pi and a .mom
     if obj.pi.o_kind != plt.KIND_CPY or obj.pi.o_type != plt.TYPE_L5:
-        raise plt.PltError("Expected a LEVEL_5 object")
+        raise plt.PltError("Expected a Payload object")
+    #plt.Data_dump(obj.pi, obj.mom, "pldns:ldns()")
     ldns_info = ffi.new("struct ldns_info *")
+    if obj.pi.proto == 6:  # TCP
+        dns_len = lib.get_short(obj.pi.dp, 0)
+        obj.pi.dp += 2;  obj.pi.rem -= 2
+        if obj.pi.rem < dns_len:
+            print(">>> DNS record length %d, truncated to %d" % \
+                (dns_len, obj.pi.rem), file=sys.stderr)
     dns_status = lib.get_ldns_info(ldns_info, obj.pi.dp, obj.pi.rem)
-    # plt.Data_dump(obj.pi, obj.mom, "new _ldns_object")
+    #plt.Data_dump(obj.pi, obj.mom, "new _ldns_object")
     return _ldns_object(ldns_info)
         
                             

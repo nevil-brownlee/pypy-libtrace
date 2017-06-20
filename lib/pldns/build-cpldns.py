@@ -26,6 +26,8 @@ ffi = FFI()
 ffi.cdef("int get_ldns_info(struct ldns_info *ldi, uint8_t *dns_msg, int dns_len);")
 ffi.cdef("int ldns_ok(struct ldns_info *ldi);")
 
+ffi.cdef("uint16_t get_short(uint8_t *bp, uint16_t x);")
+
 ffi.set_source("cpldns",  # .so to be created
     """ // passed to the real C compiler
 #include <ldns/ldns.h>
@@ -42,6 +44,11 @@ int get_ldns_info(struct ldns_info *ldi, uint8_t *dns_msg, int dns_len) {
 
 int ldns_ok(struct ldns_info *ldi) {
    return ldi->status == LDNS_STATUS_OK;
+   }
+
+uint16_t get_short(uint8_t *bp, uint16_t x) {
+   uint16_t v = *(uint16_t *)&bp[x];
+   return ntohs(v);
    }
     """,
     libraries=["ldns", "c"])   # list of libraries to link with
