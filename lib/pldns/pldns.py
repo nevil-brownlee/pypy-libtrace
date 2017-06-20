@@ -140,8 +140,8 @@ def ldns(obj):  # Objects have a .pi and a .mom
         dns_len = lib.get_short(obj.pi.dp, 0)
         obj.pi.dp += 2;  obj.pi.rem -= 2
         if obj.pi.rem < dns_len:
-            print(">>> DNS record length %d, truncated to %d" % \
-                (dns_len, obj.pi.rem), file=sys.stderr)
+            sys.stderr.write(">>> DNS record length %d, truncated to %d\n" % \
+                (dns_len, obj.pi.rem))
     dns_status = lib.get_ldns_info(ldns_info, obj.pi.dp, obj.pi.rem)
     #plt.Data_dump(obj.pi, obj.mom, "new _ldns_object")
     return _ldns_object(ldns_info)
