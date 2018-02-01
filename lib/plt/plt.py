@@ -53,11 +53,12 @@ TYPE_TCP      = 41
 TYPE_UDP      = 42
 TYPE_ICMP     = 43
 TYPE_ICMP6    = 44
+TYPE_SCTP     = 45
 TYPE_L5       = 50
 
 type_strings = {TYPE_PKT:"Packet", TYPE_DATA:"Data", TYPE_L2:"Layer2",
     TYPE_L3:"Layer3", TYPE_Internet:"Internet", TYPE_IP:"IP", TYPE_IP6:"IP6",
-    TYPE_L4:"Transport", TYPE_TCP:"TCP", TYPE_UDP:"UDP",
+    TYPE_L4:"Transport", TYPE_TCP:"TCP", TYPE_UDP:"UDP", TYPE_SCTP:"SCTP",
     TYPE_L5:"Payload", TYPE_ICMP:"ICMP", TYPE_ICMP6:"ICMP6"}
 
 def plt_type(t):
@@ -265,6 +266,7 @@ class _filter:
 def trace(uri):
     return _trace(uri)
         
+
 class _trace:
     def __init__(self, uri):
         self.uri = uri
@@ -353,6 +355,7 @@ def cp2ba(cp):  # Make bytearray slice from cdata pointer
 
 def packet():
     return _pkt_obj()
+
 
 class _pkt_obj(object): # New-style class, child of object
     def __init__(self):
@@ -477,6 +480,15 @@ class _pkt_obj(object): # New-style class, child of object
                     return _icmp6_obj(new_pi, self.mom)
         return None
     icmp6 = property(get_icmp6)
+
+    def get_sctp(self):
+        self.check_obj_l3()
+        new_pi = ffi.new("struct pi *")
+        if lib.get_trans_payload(new_pi, self.pi):
+            if new_pi.proto == 132:
+                return _sctp_obj(new_pi, self.mom)
+        return None
+    sctp = property(get_sctp)
 
     # Instance attributes ...
     
@@ -814,7 +826,6 @@ class _ip_obj(_inet_obj):
         return None
     payload = property(get_payload)
 
-    
 def ip(data_in):
     pi, mom = mk_new_obj(TYPE_IP, data_in)
     pi.ethertype = 0x0800
@@ -857,7 +868,6 @@ class _ip6_obj(_inet_obj):
             return new_pi.dp[0:new_pi.rem]
         return None
     payload = property(get_payload)
-
 
 def ip6(data_in):
     pi, mom = mk_new_obj(TYPE_IP6, data_in)
@@ -1138,7 +1148,6 @@ class _udp_obj(_inet_obj):
         return None
     payload = property(get_payload)
 
-
 def udp(data_in):
     pi, mom = mk_new_obj(TYPE_UDP, data_in)
     pi.l3_rem = 0  # No l3 data for a new object
@@ -1227,7 +1236,6 @@ class _echo_obj(_icmp_obj):
         return None
     sequence = property(get_sequence)
 
-
 class _redirect_obj(_icmp_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1238,7 +1246,6 @@ class _redirect_obj(_icmp_obj):
         return None
     gateway = property(get_gateway)
 
-    
 def icmp(data_in):
     pi, mom = mk_new_obj(TYPE_ICMP, data_in)
     pi.l3_rem = 0  # No l3 data for a new object
@@ -1317,7 +1324,6 @@ class _icmp6_obj(_ip_obj):
         return None
     neighbour = property(get_neighbour)
 
-
 class _echo_obj(_icmp_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1334,7 +1340,6 @@ class _echo_obj(_icmp_obj):
         return None
     sequence = property(get_sequence)
 
-    
 class _toobig_obj(_icmp_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1345,7 +1350,6 @@ class _toobig_obj(_icmp_obj):
         return None
     mtu = property(get_mtu)
 
-    
 class _param_obj(_icmp6_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1356,7 +1360,6 @@ class _param_obj(_icmp6_obj):
         return None
     pointer = property(get_pointer)
 
-    
 class _neighbour_obj(_icmp6_obj):
     def __init__(self, pi, mom):
         self.pi = pi;  self.mom = mom
@@ -1367,9 +1370,104 @@ class _neighbour_obj(_icmp6_obj):
         return None
     target_prefix = property(get_target_prefix)
 
-
 def icmp6(data_in):
     pi, mom = mk_new_obj(TYPE_ICMP6, data_in)
     pi.l3_rem = 0  # No l3 data for a new object
     # Data_dump(pi, mom, "new icmp6()")
     return _icmp6_obj(pi, mom)
+
+
+class _sctp_obj(_inet_obj):  # SCTP dissection added 1 Feb 2018
+    def __init__(self, pi, mom):
+        self.pi = pi;  self.mom = mom
+        self.pi.o_type = TYPE_SCTP
+        # Data_dump(self.pi, self.mom, "new _sctp_obj ***")
+
+    def check_sctp(self, x):
+        if self.pi.o_type != TYPE_SCTP:
+            raise PltError("Expected a SCTP object")
+        return self.pi.rem >= x
+                
+    def get_src_port(self):
+        if self.check_sctp(2):
+            return lib.get_short(self.pi.dp, 0)
+        return None
+    src_port = property(get_src_port)
+
+    def get_dst_port(self):
+        if self.check_sctp(4):
+            return lib.get_short(self.pi.dp, 2)
+        return None
+    dst_port = property(get_dst_port)
+
+    def get_verification_tag(self):
+        if self.check_sctp(8):
+            return lib.get_long(self.pi.dp, 4)
+        return None
+    verification_tag = property(get_verification_tag)
+
+    def get_checksum(self):
+        if self.check_sctp(12):
+            return lib.get_long(self.pi.dp, 8)
+        return None
+    checksum = property(get_checksum)
+
+    def get_chunks(self):
+        rem = self.pi.rem-12
+        if rem >= 4:
+            cx = 12  # Start of first chunk
+            chunk_list = []
+            while rem != 0:
+                ch = _sctp_chunk_obj(self.pi, self.mom, cx)
+                chunk_list.append(ch)
+                rem -= ch.alen;  cx += ch.alen
+            return chunk_list
+        return None
+    chunks = property(get_chunks)
+
+def sctp(data_in):
+    pi, mom = mk_new_obj(TYPE_SCTP, data_in)
+    # Data_dump(pi, mom, "new sctp()")
+    return _sctp_obj(pi, mom)
+
+class _sctp_chunk_obj(_sctp_obj):
+    def __init__(self, pi, mom, cx):  # Index of first byte in chunk
+        self.pi = pi;  self.mom = mom
+        self.dp = self.pi.dp[cx:self.pi.rem];  # This chunk's bytes
+        self.rem = self.pi.rem - cx  # and remaining number of bytes
+        if pi.rem < cx+4:  # Too short for length
+            return None
+        self.clen = lib.get_short(self.dp, 2)  # Chunk length
+        self.alen = self.clen  # Actual length
+        if self.rem < self.clen:
+            self.alen = self.rem
+
+    def get_chunk_type(self):
+        if self.rem >= 1:
+            return self.dp[0]
+        return None
+    type = property(get_chunk_type)
+
+    def get_chunk_flags(self):
+        if self.rem >= 2:
+            return self.dp[1]
+        return None
+    flags = property(get_chunk_flags)
+
+    def get_chunk_length(self):
+        if self.rem >= 4:
+            return self.clen
+        return None
+    length = property(get_chunk_length)
+
+    def get_chunk_is_ok(self):
+        if self.rem >= 4:
+            return self.alen == self.clen
+        return None
+    is_ok = property(get_chunk_is_ok)
+ 
+    def get_chunk_bytes(self):
+        if self.rem >= 4:
+            return self.dp[4:self.rem]
+        return None
+    bytes = property(get_chunk_bytes)
