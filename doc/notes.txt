@@ -1,0 +1,30 @@
+1605, Mon  5 Feb 2018 (NZDT)
+
+Installed latest pypy3
+pypy3 -V
+Python 3.5.3 (3f6eaa010fce, Jan 11 2018, 05:27:47)
+[PyPy 5.10.1 with GCC 4.2.1 Compatible Apple LLVM 9.0.0 (clang-900.0.39.2)]
+
+Seems to work fine.
+
+Tried to install latest pypy-libtrace:
+sudo make install-py2 worked fine
+sudo make install-py3 fails, ImportError: No module named 'setuptools'
+
+sudo pypy3 -m ensurepip also fails.
+It fined pip and setuptools, then crashes with
+dyld: lazy symbol binding failed: Symbol not found: _utimensat
+  Referenced from: /Users/jbro111/pypy3-v5.10.1-osx64/bin//libpypy3-c.dylib
+  Expected in: flat namespace
+
+Falling back to 3-v5.5.0 allowed make install-pypy3 to work properly again
+
+/usr/local/bin$
+  sudo ln -s  /Users/jbro111//pypy3-v5.10.0-osx64/bin/pypy3 pypy310
+    lets us use 5.10.0 :-)
+
+pypy-libtrace: install-pypy3 gives odd error:
+  cnatkit.c:790:1: warning: control reaches end of non-void function
+build-cnatkit.py doesn't have any functions like that, sigh
+
+
