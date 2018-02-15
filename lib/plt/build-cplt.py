@@ -68,6 +68,7 @@ ffi.cdef("int DIR_UNKNOWN;")
 ffi.cdef("int set_config(struct libtrace_t *trace, int which, int val);")
 ffi.cdef("int set_config_filter(struct libtrace_t *trace, struct libtrace_filter_t *filter);")
 ffi.cdef("int set_config_output(struct libtrace_out_t *trace, int which, int val);")
+ffi.cdef("int event_read_packet(struct libtrace_t *lt_trace, struct libtrace_packet_t *packet, long user_timeout);")
 
 ffi.cdef("uint16_t get_short(uint8_t *bp, uint16_t x);")
 ffi.cdef("void set_short(uint8_t *bp, int bx, uint16_t v);")
@@ -329,6 +330,57 @@ int DIR_OUTGOING = TRACE_DIR_OUTGOING;
 int DIR_INCOMING = TRACE_DIR_INCOMING;
 int DIR_OTHER = TRACE_DIR_OTHER;
 int DIR_UNKNOWN = TRACE_DIR_UNKNOWN;
+
+int event_read_packet(struct libtrace_t *lt_trace, libtrace_packet_t *packet,
+      long user_timeout) {  /* Seconds */
+   libtrace_eventobj_t ev;
+   fd_set fdset;  int maxfd = 0;
+   struct timeval timeout, *tp = NULL;
+
+   time_t idle_timeout, time_now = time(NULL);
+   do {
+      FD_ZERO(&fdset);
+      ev = trace_event(lt_trace, packet);
+      if (ev.type == TRACE_EVENT_PACKET) { // 2
+	 if (ev.size > 0) return 1;  /* Read OK (or EOF) */
+	 return -1;  /* Error */
+	 }
+      else if (ev.type == TRACE_EVENT_TERMINATE) { // 3
+	 return 0;  /* Return as EOF */
+	 }
+      else if (ev.type == TRACE_EVENT_SLEEP) { // 1
+	 /* Stop select when libtrace wants us to poll again
+	    or when our timeout triggers, whichever comes first.
+	    ev.seconds = time libtrace wants us to wait */
+	 if (user_timeout == 0) {
+	    timeout.tv_sec = (long)ev.seconds;
+	    timeout.tv_usec =  (long)((ev.seconds-timeout.tv_sec)*1000000.0);
+	    }
+	 else {
+	    timeout.tv_sec = user_timeout;
+ 	    if (ev.seconds < user_timeout) timeout.tv_sec = ev.seconds;
+	    timeout.tv_usec = 0;
+	    }
+	 tp = &timeout;
+	 }
+      else if (ev.type == TRACE_EVENT_IOWAIT) {  // 0
+ 	 /* Wait for fd to be ready or until user timeout triggers */
+	 if (user_timeout == 0)
+	    tp = NULL;  /* Select won't time out */
+	 else {
+	    timeout.tv_sec = user_timeout;  timeout.tv_usec = 0;
+	    tp = &timeout;
+	    }
+	 FD_SET(ev.fd, &fdset);	 maxfd = ev.fd;				
+	 }
+      idle_timeout = time_now + user_timeout;  /* time_t for timeout */
+      select(maxfd+1, &fdset, NULL, NULL, tp);
+
+      time_now = time(NULL);
+      } while (time_now < idle_timeout);
+
+   return -2;  /* Timeout */
+   }
 
 int set_config(struct libtrace_t *trace, int which, int val) {
     return trace_config(trace, which, &val);
