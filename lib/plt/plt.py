@@ -273,6 +273,7 @@ class _trace:
         #self.ltrace = lib.trace_create(uri)  # Create trace  # py2
         self.ltrace = lib.trace_create(uri.encode(encoding='UTF-8'))  # Create trace
         self.pkt = _pkt_obj()
+        self.timeout = 0
         self.started = False
 
     def __str__(self):
@@ -294,6 +295,13 @@ class _trace:
     def conf_promisc(self, prom_v):
         if lib.set_config(self.ltrace, OPT_PROMISC, prom_v) < 0:
             raise PltError("Couldn't set trace promiscuous %d" % prom_v)
+        return None
+
+    def conf_timeout(self, to_v):
+        if to_v < 0:
+            raise PltError("Timeout value must be >= 0" % prom_v)
+        else:
+            self.timeout = to_v
         return None
 
     def start(self):
@@ -321,9 +329,14 @@ class _trace:
     def read_packet(self, pkt):
         if not self.started:
             raise PltError("Trace not started")
-        r = lib.trace_read_packet(self.ltrace, pkt.p)
+        if self.timeout == 0:
+            r = lib.trace_read_packet(self.ltrace, pkt.p)
+        else:
+            r = lib.event_read_packet(self.ltrace, pkt.p, self.timeout)
         if r == 0:  # EOF
             return False
+        elif r == -2:  # Timeout
+            raise PltError("Timeout in trace read()")            
         elif r < 0:  # libtrace error
             trace_err = lib.trace_get_err(self.ltrace)
             raise LibtraceError(ca2str(trace_err.problem))
